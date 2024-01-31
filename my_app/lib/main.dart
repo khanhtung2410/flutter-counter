@@ -26,6 +26,7 @@ class CouterPage extends StatefulWidget {
 class _CouterPageState extends State<CouterPage> {
   final MyObject myObject = MyObject(3);
   final TextEditingController _newval = TextEditingController();
+  String value = '';
   int m = 0;
   @override
   Widget build(BuildContext context) {
@@ -40,8 +41,8 @@ class _CouterPageState extends State<CouterPage> {
             child: TextField(
               controller: _newval,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(hintText: 'Nhập số nguyên tố'),
-              onChanged: (value) {
+              decoration: const InputDecoration(hintText: 'Nhập số nguyên tố n'),
+              onChanged: (String value) {
                 m = int.parse(value);
               },
             ),
@@ -49,7 +50,6 @@ class _CouterPageState extends State<CouterPage> {
           const SizedBox(width: 5),
           OutlinedButton.icon(
             onPressed: () {
-              print(m);
               String newvalue = myObject.textpower(m).toString();
               print(myObject.textpower(m));
               final updatevalue = newvalue;
@@ -57,9 +57,10 @@ class _CouterPageState extends State<CouterPage> {
                 text: updatevalue,
                 selection: TextSelection.collapsed(offset: updatevalue.length),
               );
+              m = myObject.textpower(m);
             },
             icon: const Icon(Icons.power),
-            label: const Text('Tính lũy thừa'),
+            label: const Text('Tính lũy thừa bậc n'),
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
