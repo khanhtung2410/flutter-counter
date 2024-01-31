@@ -1,0 +1,2 @@
+statelesswidget: tạo màn hình không thay đổi trạng thái
+statefulwindget: tạo màn hình thay đổi được trạng thái
