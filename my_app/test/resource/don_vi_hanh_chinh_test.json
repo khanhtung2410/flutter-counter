@@ -1,0 +1,26 @@
+{
+    "ward": [
+        {
+            "id": "00001",
+            "name": "Phường Phúc Xá",
+            "level": "Phường",
+            "districtId": "001",
+            "provinceId": "01"
+        }
+    ],
+    "district": [
+        {
+            "id": "001",
+            "name": "Quận Ba Đình",
+            "level": "Quận",
+            "provinceId": "01"
+        }
+    ],
+    "province": [
+        {
+            "id": "01",
+            "name": "Thành phố Hà Nội",
+            "level": "Thành phố Trung ương"
+        }
+    ]
+}
