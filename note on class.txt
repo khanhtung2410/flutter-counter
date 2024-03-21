@@ -8,12 +8,34 @@ tạo province(add class data)
 
 widget stepper (vertical-dọc/horizontal-ngang)
 
-shoppe
-B1: Nhập thông tin + validate
-    Họ và tên
-    Email
-    SĐT
-    Ngày tháng năm sinh (date time picker)
-    Giới tính
-B2: Địa chỉ (tỉnh-> huyện-> xã)
-B3: Hiển thị toàn bộ thuộc tính người dùng
+9/3/2023
+                        chữa bài test 
+unit test 
+chia district,province,ward ra thành các file main và file test riêng, tổng cộng 6 file
+vd
+folder model có district.dart,province.dart,..., chỉ tạo lớp District hoặc chỉ tạo lớp province
+file test district cũng chỉ import file district.dart rồi viết testcase liên quan đến nó
+bài 2 cũng thành 4 tệp; 2 tập address.dart và UserInfo.dart kết mối với nhau và kết nối vs các tập của bài 1
+vd 
+khi khai báo dữ liệu
+vd: 
+"final province = Province(
+        id: '01', name: "Thành phố Hà Nội", level: 'Thành phố trung ương');"
+đặt trường hợp thiếu name(id,..) hoặc bằng null thì lỗi 
+vd: không khai báo id
+đặt trường hợp sai kiểu dữ liệu thì lỗi 
+vd: khai báo "id: 01" (dữ liệu kiểu số trong khi phải là kiểu int)
+
+"tìm throw exception khi báo lỗi trong test case"
+
+                        code app
+dùng "date time picker" (ra luôn 1 quyển lịch để chọn)
+
+đk gmail: có @; sau @ có tối thiểu 1 dấu .; sau chấm có tối thiểu 2 kí tự
+
+chọn địa chỉ:
+có 1 thư viện để lọc
+chỉ có thể chọn từ cao xuống thấp (tỉnh->huyện->xã)
+option builder
+
+thêm các thư viện trong ảnh đt

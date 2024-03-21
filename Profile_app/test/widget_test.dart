@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:my_app/main.dart';
+import 'package:my_app/location/district.dart';
 
 void main() {
   group('Test constructor return object with right given data:', () {
