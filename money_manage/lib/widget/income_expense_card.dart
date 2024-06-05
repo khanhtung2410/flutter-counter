@@ -22,6 +22,13 @@ class IncomeExpenseCard extends StatelessWidget {
       height: 80,
       padding: const EdgeInsets.all(defaultSpacing),
       decoration: BoxDecoration(
+          boxShadow: const [
+            BoxShadow(
+                color: Colors.black12,
+                offset: Offset.zero,
+                spreadRadius: 3,
+                blurRadius: 12)
+          ],
           color: expenseData.label == "Thu nhập" ? primaryDark : accent,
           borderRadius: const BorderRadius.all(Radius.circular(defaultRadius))),
       child: Row(
@@ -39,7 +46,7 @@ class IncomeExpenseCard extends StatelessWidget {
                       ?.copyWith(color: Colors.white),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: defaultSpacing/4),
+                  padding: const EdgeInsets.only(top: defaultSpacing / 4),
                   child: Text(
                     expenseData.amount,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
