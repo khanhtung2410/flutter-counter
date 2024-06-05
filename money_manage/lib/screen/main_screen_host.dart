@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:money_manage/screen/add_transaction_tab.dart';
+import 'package:money_manage/data/userInfo.dart';
 import 'package:money_manage/screen/home_profile_tab.dart';
 import 'package:money_manage/screen/home_screen_tab.dart';
 import 'package:money_manage/ultils/colors_and_size.dart';
+import 'package:intl/intl.dart';
 
 class MainScreenHost extends StatefulWidget {
   const MainScreenHost({super.key});
@@ -41,9 +42,7 @@ class _MainScreenHostState extends State<MainScreenHost> {
         child: FloatingActionButton(
           backgroundColor: background,
           elevation: 0,
-          onPressed: () {
-            
-          },
+          onPressed: () {},
           shape: RoundedRectangleBorder(
               side: const BorderSide(width: 3, color: primaryLight),
               borderRadius: BorderRadius.circular(100)),
@@ -79,6 +78,7 @@ class _MainScreenHostState extends State<MainScreenHost> {
     );
   }
 }
+
 class TransactionForm extends StatefulWidget {
   const TransactionForm({super.key});
 
@@ -87,25 +87,132 @@ class TransactionForm extends StatefulWidget {
 }
 
 class _TransactionFormState extends State<TransactionForm> {
-  final nameCtl = TextEditingController();
+  var formatter = NumberFormat('###,###,###,000');
+  final moneyCtl = TextEditingController();
+  final dateCtl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  ItemCategoryType? selectedItem;
+
   @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
       child: Column(
-        children: [
-          TextFormField(
-            controller: nameCtl,
-            decoration: const InputDecoration(labelText: 'Họ và tên'),
-            keyboardType: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Vui lòng nhập họ tên';
-              }
-              return null;
-            },
+        children: <Widget>[
+          const SizedBox(
+            height: defaultSpacing * 3,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: DropdownButtonFormField<ItemCategoryType>(
+              decoration: InputDecoration(
+                label: const Text('Mục chi'),
+                labelStyle: const TextStyle(
+                  fontSize: fontSizeHeading,
+                  fontWeight: FontWeight.w500,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(defaultRadius),
+                ),
+              ),
+              value: ItemCategoryType.health,
+              onChanged: (ItemCategoryType? categoryNumber) {
+                setState(() {
+                  selectedItem = categoryNumber;
+                });
+              },
+              items: ItemCategoryType.values
+                  .map<DropdownMenuItem<ItemCategoryType>>(
+                      (ItemCategoryType categoryNumber) {
+                return DropdownMenuItem<ItemCategoryType>(
+                  value: categoryNumber,
+                  child: Text(categoryNumber.categoryLabel),
+                );
+              }).toList(),
+            ),
+          ),
+          const SizedBox(
+            height: defaultSpacing,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: TextFormField(
+              readOnly: true,
+              controller: dateCtl,
+              decoration: InputDecoration(
+                labelText: "Ngày giao dịch",
+                hintText: 'Nhập ngày giao dịch',
+                labelStyle: const TextStyle(
+                  fontSize: fontSizeHeading,
+                  fontWeight: FontWeight.w500,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(defaultRadius),
+                ),
+              ),
+              onTap: () async {
+                DateTime? date = DateTime(1900);
+                FocusScope.of(context).requestFocus(FocusNode());
+                date = await showDatePicker(
+                    context: context,
+                    firstDate: DateTime(1900),
+                    initialEntryMode: DatePickerEntryMode.calendarOnly,
+                    initialDate: DateTime.now(),
+                    lastDate: DateTime(2100));
+                if (date != null) {
+                  DateTime() = date;
+                  final TimeOfDay? selectedTime = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.fromDateTime(date));
+                  dateCtl.text = DateFormat('dd/MM/yyyy HH:mm').format(DateTime(
+                      date.year,
+                      date.month,
+                      date.day,
+                      selectedTime!.hour,
+                      selectedTime.minute));
+                }
+              },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Vui lòng nhập ngày diễn ra giao dịch';
+                }
+                try {
+                  DateFormat('dd/MM/yyyy').parse(value);
+                  return null;
+                } catch (e) {
+                  return 'Ngày giao dịch không hợp lệ';
+                }
+              },
+            ),
+          ),
+          const SizedBox(
+            height: defaultSpacing,
+          ),
+          const SizedBox(
+            height: defaultSpacing,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: TextFormField(
+              controller: moneyCtl,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(defaultRadius),
+                ),
+                hintText: 'Nhập giá trị',
+              ),
+              keyboardType: TextInputType.number,
+              onChanged: (value) {
+                // var newVal = int.parse(value);
+                // value = formatter.format(newVal);
+              },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Vui lòng nhập số tiền';
+                }
+                return null;
+              },
+            ),
           ),
         ],
       ),

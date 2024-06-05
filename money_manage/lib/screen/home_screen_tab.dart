@@ -6,7 +6,7 @@ import 'package:money_manage/widget/transaction_item_title.dart';
 
 class HomeScreenTab extends StatelessWidget {
   const HomeScreenTab({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(

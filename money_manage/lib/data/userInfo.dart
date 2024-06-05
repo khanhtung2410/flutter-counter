@@ -1,6 +1,16 @@
 enum TransactionType { outflow, inflow }
 
-enum ItemCategoryType { self, family, travel, health, grocery }
+enum ItemCategoryType {
+  self('Chính mình', 1),
+  family('Gia đình', 2),
+  gift('Quà', 3),
+  health('Sức khỏe', 4),
+  grocery('Đồ ăn', 5);
+
+  const ItemCategoryType(this.categoryLabel, this.categoryNumber);
+  final String categoryLabel;
+  final int categoryNumber;
+}
 
 class UserInfo {
   final String name;
@@ -26,7 +36,7 @@ class Transaction {
   final TransactionType transactionType;
   final String itemCategoryName;
   final String itemName;
-  final int amount;
+  final String amount;
   final String date;
 
   const Transaction(this.categoryType, this.transactionType,
@@ -35,18 +45,17 @@ class Transaction {
 
 const List<Transaction> transactions1 = [
   Transaction(ItemCategoryType.grocery, TransactionType.outflow, 'Food',
-      'Steak', 200000, 'Dec, 23'),
+      'Steak', '200000', 'Dec, 23'),
   Transaction(ItemCategoryType.family, TransactionType.outflow, 'Gift', 'Cake',
-      15000, 'Oct, 24')
+      '15000', 'Oct, 24')
 ];
 
 const List<Transaction> transactions2 = [
   Transaction(ItemCategoryType.family, TransactionType.inflow, 'Gift',
-      'Transfer', 200000, 'Nov, 23'),
+      'Transfer', '200000', 'Nov, 23'),
   Transaction(ItemCategoryType.family, TransactionType.inflow, 'Gift', 'doc',
-      150000, 'Oct, 24')
+      '150000', 'Oct, 24')
 ];
-
 
 const userdata = UserInfo(
     name: 'me',
