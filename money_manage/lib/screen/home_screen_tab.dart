@@ -1,12 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:localstore/localstore.dart';
 import 'package:money_manage/data/userInfo.dart';
 import 'package:money_manage/ultils/colors_and_size.dart';
 import 'package:money_manage/widget/income_expense_card.dart';
 import 'package:money_manage/widget/transaction_item_title.dart';
 
 class HomeScreenTab extends StatelessWidget {
-  const HomeScreenTab({super.key});
-  
+   HomeScreenTab({super.key});
+
+  Transaction transactions = Transaction();
+  bool isLoaded = false;
+
+  Future<Transaction> init() async {
+    if (isLoaded) return transactions;
+    var value = await loadUserInfo();
+    if (value != null) {
+      try {
+        isLoaded = true;
+        return Transaction.fromMap(value);
+      } catch (e) {
+        debugPrint(e.toString());
+        return Transaction();
+      }
+    }
+    return Transaction();
+  }
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -52,21 +70,23 @@ class HomeScreenTab extends StatelessWidget {
             const SizedBox(
               height: defaultSpacing * 2,
             ),
-             Row(
+             const Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
                     child: IncomeExpenseCard(
                   expenseData: ExpenseData(
-                      "Thu nhập", '${userdata.inflow} vnđ', Icons.arrow_upward_rounded),
+                    //${userdata.inflow}
+                      "Thu nhập", ' vnđ', Icons.arrow_upward_rounded),
                 )),
-                const SizedBox(
+                SizedBox(
                   width: defaultSpacing,
                 ),
                 Expanded(
                     child: IncomeExpenseCard(
                   expenseData: ExpenseData(
-                      'Chi tiêu', '${userdata.outflow} vnđ', Icons.arrow_downward_rounded),
+                    //${userdata.outflow}
+                      'Chi tiêu', ' vnđ', Icons.arrow_downward_rounded),
                 ))
               ],
             ),
@@ -83,14 +103,17 @@ class HomeScreenTab extends StatelessWidget {
             const SizedBox(
               height: defaultSpacing,
             ),
-            Text(
-              userdata.transactions.last.date,
+            const Text(//userdata.transactions?.last.date??
+               "",
               style: TextStyle(color: fontSubheading),
             ),
-             ...userdata.transactions.map((transaction) => TransactionItemTile(transaction: transaction))
+             TransactionItemTile(transaction: transactions)
           ],
         ),
       ),
     );
   }
+}
+Future<Map<String, dynamic>?> loadUserInfo() async {
+  return await Localstore.instance.collection('users').doc('transaction').get();
 }

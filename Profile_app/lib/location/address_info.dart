@@ -56,7 +56,7 @@ class AddressInfo {
 
   String toJson() => json.encode(toMap());
 
-  factory AddressInfo.fromJson(String source) =>
+  factory AddressInfo.fromJson(source) =>
       AddressInfo.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override

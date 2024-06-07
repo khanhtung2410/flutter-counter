@@ -14,8 +14,9 @@ dependencies:
     sdk: flutter
   intl: ^0.17.0
   date_field: ^3.0.3
-
+  diacritic: ^0.1.5
   cupertino_icons: ^1.0.2
+  localstore: ^1.3.5
 
 dev_dependencies:
   flutter_test:
@@ -36,6 +37,7 @@ flutter:
   assets: 
     -  assest/icon/
     -  assest/picture/
+    -  assest/data/thss.json
 
   uses-material-design: true
 

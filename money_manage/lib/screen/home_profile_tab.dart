@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:money_manage/data/userInfo.dart';
 import 'package:money_manage/ultils/colors_and_size.dart';
 
 class HomeProfileTab extends StatelessWidget {
@@ -90,13 +89,13 @@ class HomeProfileTab extends StatelessWidget {
                     const SizedBox(
                       height: defaultSpacing / 4,
                     ),
-                    ProfileAccountInfoTitle(
-                        title: "Giới tính",
-                        subTitle: userdata.gender,
-                        imageUrl: userdata.gender == "Nữ"
+                    const ProfileAccountInfoTitle(
+                        title: "Giới tính",//userdata.gender
+                        subTitle: "f" ,
+                        imageUrl: 'f' == "Nữ"
                             ? "assest/icon/female-icon.png"
                             : "assest/icon/male-icon.png"),
-                    ProfileAccountInfoTitle(
+                    const ProfileAccountInfoTitle(
                         title: 'Ngày sinh',
                         subTitle: 'subTitle',
                         imageUrl: "assest/icon/male-icon.png")

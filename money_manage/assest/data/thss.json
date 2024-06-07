@@ -1,0 +1,34 @@
+{
+    "transactionType": [
+      {
+        "transactionLabel":"Inflow",
+        "transactionNumber": "1"
+      },
+      {
+        "transactionLabel": "Inflow",
+        "transactionNumber": "2"
+      }
+    ],
+    "itemCategory": [
+      {
+        "categoryLabel": "self",
+        "categoryNumber": "1"
+      },
+      {
+        "categoryLabel": "family",
+        "categoryNumber": "2"
+      },
+      {
+        "categoryLabel": "gift",
+        "categoryNumber": "3"
+      },
+      {
+        "categoryLabel": "health",
+        "categoryNumber": "4"
+      },
+      {
+        "categoryLabel": "food",
+        "categoryNumber": "5"
+      }
+    ]
+  }

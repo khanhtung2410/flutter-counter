@@ -22,7 +22,7 @@ class UserInfo {
     DateTime? birthDate,
     AddressInfo? address,
   }) {
-    return UserInfo(
+    return UserInfo(  
       name: name ?? this.name,
       email: email ?? this.email,
       phoneNumber: phoneNumber ?? this.phoneNumber,

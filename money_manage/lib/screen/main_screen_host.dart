@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:localstore/localstore.dart';
 import 'package:money_manage/data/userInfo.dart';
+import 'package:money_manage/screen/add_transaction_tab.dart';
 import 'package:money_manage/screen/home_profile_tab.dart';
 import 'package:money_manage/screen/home_screen_tab.dart';
 import 'package:money_manage/ultils/colors_and_size.dart';
@@ -18,15 +23,15 @@ class _MainScreenHostState extends State<MainScreenHost> {
   Widget buildTabContent(int index) {
     switch (index) {
       case 0:
-        return const HomeScreenTab();
+        return HomeScreenTab();
       case 1:
-        return const TransactionForm();
+        return  const AddTransactionTab();
       case 2:
         return Container();
       case 3:
         return const HomeProfileTab();
       default:
-        return const HomeScreenTab();
+        return HomeScreenTab();
     }
   }
 
@@ -73,147 +78,6 @@ class _MainScreenHostState extends State<MainScreenHost> {
           BottomNavigationBarItem(
               icon: Image.asset('assest/icon/user_profile_icon.png'),
               label: "Cá nhân"),
-        ],
-      ),
-    );
-  }
-}
-
-class TransactionForm extends StatefulWidget {
-  const TransactionForm({super.key});
-
-  @override
-  State<TransactionForm> createState() => _TransactionFormState();
-}
-
-class _TransactionFormState extends State<TransactionForm> {
-  var formatter = NumberFormat('###,###,###,000');
-  final moneyCtl = TextEditingController();
-  final dateCtl = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-  ItemCategoryType? selectedItem;
-
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: <Widget>[
-          const SizedBox(
-            height: defaultSpacing * 3,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: DropdownButtonFormField<ItemCategoryType>(
-              decoration: InputDecoration(
-                label: const Text('Mục chi'),
-                labelStyle: const TextStyle(
-                  fontSize: fontSizeHeading,
-                  fontWeight: FontWeight.w500,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(defaultRadius),
-                ),
-              ),
-              value: ItemCategoryType.health,
-              onChanged: (ItemCategoryType? categoryNumber) {
-                setState(() {
-                  selectedItem = categoryNumber;
-                });
-              },
-              items: ItemCategoryType.values
-                  .map<DropdownMenuItem<ItemCategoryType>>(
-                      (ItemCategoryType categoryNumber) {
-                return DropdownMenuItem<ItemCategoryType>(
-                  value: categoryNumber,
-                  child: Text(categoryNumber.categoryLabel),
-                );
-              }).toList(),
-            ),
-          ),
-          const SizedBox(
-            height: defaultSpacing,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: TextFormField(
-              readOnly: true,
-              controller: dateCtl,
-              decoration: InputDecoration(
-                labelText: "Ngày giao dịch",
-                hintText: 'Nhập ngày giao dịch',
-                labelStyle: const TextStyle(
-                  fontSize: fontSizeHeading,
-                  fontWeight: FontWeight.w500,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(defaultRadius),
-                ),
-              ),
-              onTap: () async {
-                DateTime? date = DateTime(1900);
-                FocusScope.of(context).requestFocus(FocusNode());
-                date = await showDatePicker(
-                    context: context,
-                    firstDate: DateTime(1900),
-                    initialEntryMode: DatePickerEntryMode.calendarOnly,
-                    initialDate: DateTime.now(),
-                    lastDate: DateTime(2100));
-                if (date != null) {
-                  DateTime() = date;
-                  final TimeOfDay? selectedTime = await showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay.fromDateTime(date));
-                  dateCtl.text = DateFormat('dd/MM/yyyy HH:mm').format(DateTime(
-                      date.year,
-                      date.month,
-                      date.day,
-                      selectedTime!.hour,
-                      selectedTime.minute));
-                }
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Vui lòng nhập ngày diễn ra giao dịch';
-                }
-                try {
-                  DateFormat('dd/MM/yyyy').parse(value);
-                  return null;
-                } catch (e) {
-                  return 'Ngày giao dịch không hợp lệ';
-                }
-              },
-            ),
-          ),
-          const SizedBox(
-            height: defaultSpacing,
-          ),
-          const SizedBox(
-            height: defaultSpacing,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: TextFormField(
-              controller: moneyCtl,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(defaultRadius),
-                ),
-                hintText: 'Nhập giá trị',
-              ),
-              keyboardType: TextInputType.number,
-              onChanged: (value) {
-                // var newVal = int.parse(value);
-                // value = formatter.format(newVal);
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Vui lòng nhập số tiền';
-                }
-                return null;
-              },
-            ),
-          ),
         ],
       ),
     );

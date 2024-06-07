@@ -376,7 +376,7 @@ class _Step2FormState extends State<Step2Form> {
       List districtData = jsonData["district"];
       districtList =
           districtData.map((json) => District.fromMap(json)).toList();
-
+      print("stfu");
       List wardData = jsonData["ward"];
       wardList = wardData.map((json) => Ward.fromMap(json)).toList();
     } catch (e) {

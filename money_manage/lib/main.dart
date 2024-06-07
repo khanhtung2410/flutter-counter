@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_manage/screen/main_screen_host.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
