@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:localstore/localstore.dart';
+import 'package:money_manage/data/localstore.dart';
 
 import 'package:money_manage/data/userInfo.dart';
 import 'package:money_manage/ultils/colors_and_size.dart';
@@ -17,118 +18,51 @@ class AddTransactionTab extends StatefulWidget {
 
 class _AddTransactionTabState extends State<AddTransactionTab> {
   final formKey = GlobalKey<FormState>();
-  UserInfo userInfo = UserInfo();
+  UserInfo userInfo = getMockUserInfo();
   bool isLoaded = false;
-  List<ItemCategoryType> itemCategoryList = [];
-  List<TransactionType> transactionTypeList = [];
-
-  @override
-  void initState() {
-    super.initState();
-    loadLocationData().then((value) {
-      setState(() {
-        isLoaded = true;
-        itemCategoryList = value['itemCategoryList'] ?? [];
-        transactionTypeList = value['transactionTypeList'] ?? [];
-      });
-    });
-  }
-
-  Future<Map<String, dynamic>> loadLocationData() async {
-    try {
-      String data = await rootBundle.loadString("assest/data/thss.json");
-      Map<String, dynamic> jsonData = json.decode(data);
-      List itemCategoryData = jsonData["itemCategory"];
-      List transactionTypeData = jsonData["transactionType"];
-      List<ItemCategoryType> itemCategoryList = itemCategoryData
-          .map((json) => ItemCategoryType.fromMap(json))
-          .toList();
-      List<TransactionType> transactionTypeList = transactionTypeData
-          .map((json) => TransactionType.fromMap(json))
-          .toList();
-      return {
-        "itemCategoryList": itemCategoryList,
-        "transactionTypeList": transactionTypeList,
-      };
-    } catch (e) {
-      debugPrint('Error loading type data: $e');
-      return {
-        "itemCategory": [],
-        "transactionType": [],
-      };
-    }
-  }
-
-  void saveForm() {
-    if (formKey.currentState!.validate()) {
-      formKey.currentState!.save();
-      saveUserTransactions(userInfo).then(
-        (value) {
-          showDialog<void>(
-            context: context,
-            barrierDismissible: false,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text('Thông báo'),
-                content: const SingleChildScrollView(
-                  child: ListBody(
-                    children: [
-                      Text('Hồ sơ giao dịch đã được lưu thành công'),
-                    ],
-                  ),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("Đóng"))
-                ],
-              );
-            },
-          );
-        },
-      );
-      ;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Thêm giao dịch"),
-      ),
-      body: isLoaded
-          ? Container(
-              child: Column(
-                children: [
-                  TransactionForm(
-                    formKey: formKey,
-                    userInfo: userInfo,
-                    itemCategoryList: itemCategoryList,
-                    transactionTypeList: transactionTypeList,
-                  ),
-                  ElevatedButton(onPressed: saveForm, child: const Text('Lưu')),
-                ],
+        appBar: AppBar(
+          title: Text("Thêm giao dịch"),
+        ),
+        body: Container(
+          child: Column(
+            children: [
+              TransactionForm(
+                formKey: formKey,
+                userInfo: userInfo,
               ),
-            )
-          : const Center(child: CircularProgressIndicator()),
-    );
+              ElevatedButton(
+                onPressed: () async {
+                  if (formKey.currentState!.validate()) {
+                    formKey.currentState!.save();
+                    await LocalStorageManager.saveUserInfo(userInfo);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Đã lưu giao dịch thành công'),
+                      ),
+                    );
+                  }
+                },
+                child: Text('Lưu giao dịch'),
+              ),
+            ],
+          ),
+        ));
   }
 }
 
 class TransactionForm extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final UserInfo userInfo;
-  final List<ItemCategoryType> itemCategoryList;
-  final List<TransactionType> transactionTypeList;
-  const TransactionForm(
-      {super.key,
-      required this.formKey,
-      required this.userInfo,
-      required this.itemCategoryList,
-      required this.transactionTypeList});
+
+  const TransactionForm({
+    super.key,
+    required this.formKey,
+    required this.userInfo,
+  });
 
   @override
   State<TransactionForm> createState() => _TransactionFormState();
@@ -138,13 +72,14 @@ class _TransactionFormState extends State<TransactionForm> {
   // var formatter = NumberFormat('###,###,###,000');
   final moneyCtl = TextEditingController();
   final dateCtl = TextEditingController();
-
+  String dropdownTransaction = transactionTypes.first;
+  String dropdownCategory = itemCategoryTypes.first;
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(defaultSpacing),
       child: Form(
-        key: widget.key,
+        key: widget.formKey,
         child: Column(
           children: <Widget>[
             const SizedBox(
@@ -153,6 +88,12 @@ class _TransactionFormState extends State<TransactionForm> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: DropdownButtonFormField<String>(
+                onChanged: (newValue) {
+                  _updateTransactionType(newValue);
+                },
+                onSaved: (newValue) {
+                  _updateTransactionType(newValue);
+                },
                 decoration: InputDecoration(
                   label: const Text('Loại chi'),
                   labelStyle: const TextStyle(
@@ -164,26 +105,17 @@ class _TransactionFormState extends State<TransactionForm> {
                   ),
                 ),
                 validator: (value) {
-                  if (widget.userInfo.transactions?.transactionType == null ||
-                      value!.isEmpty) {
+                  if (value!.isEmpty) {
                     return 'Vui lòng chọn loại giao dịch';
                   }
                   return null;
                 },
-                value: widget.userInfo.transactions?.transactionType
-                        ?.transactionLabel ??
-                    "2",
-                onChanged: (newValue) {
-                  setState(() {
-                    widget.userInfo.transactions?.transactionType
-                        ?.transactionLabel = newValue;
-                  });
-                },
-                items: widget.transactionTypeList
-                    .map<DropdownMenuItem<String>>((TransactionType map) {
+                value: dropdownTransaction,
+                items: transactionTypes
+                    .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
-                    value: map.transactionNumber,
-                    child: Text(map.transactionLabel ?? 'Error'),
+                    value: value,
+                    child: Text(value),
                   );
                 }).toList(),
               ),
@@ -194,6 +126,12 @@ class _TransactionFormState extends State<TransactionForm> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: DropdownButtonFormField<String>(
+                onChanged: (newValue) {
+                  _updateItemCategoryType(newValue);
+                },
+                onSaved: (newValue) {
+                  _updateItemCategoryType(newValue);
+                },
                 decoration: InputDecoration(
                   label: const Text('Mục chi'),
                   labelStyle: const TextStyle(
@@ -205,26 +143,17 @@ class _TransactionFormState extends State<TransactionForm> {
                   ),
                 ),
                 validator: (value) {
-                  if (widget.userInfo.transactions?.categoryType == null ||
-                      value!.isEmpty) {
+                  if (value!.isEmpty) {
                     return 'Vui lòng chọn loại giao dịch';
                   }
                   return null;
                 },
-                value:
-                    widget.userInfo.transactions?.categoryType?.categoryLabel ??
-                        "1",
-                onChanged: (newValue) {
-                  setState(() {
-                    widget.userInfo.transactions?.categoryType?.categoryLabel =
-                        newValue;
-                  });
-                },
-                items: widget.itemCategoryList
-                    .map<DropdownMenuItem<String>>((ItemCategoryType map) {
+                value: dropdownCategory,
+                items: itemCategoryTypes
+                    .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
-                    value: map.categoryNumber,
-                    child: Text(map.categoryLabel ?? "Error"),
+                    value: value,
+                    child: Text(value),
                   );
                 }).toList(),
               ),
@@ -235,6 +164,12 @@ class _TransactionFormState extends State<TransactionForm> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: TextFormField(
+                onChanged: (newValue) {
+                  _updateItemName(newValue);
+                },
+                onSaved: (newValue) {
+                  _updateItemName(newValue!);
+                },
                 keyboardType: TextInputType.name,
                 textCapitalization: TextCapitalization.sentences,
                 decoration: InputDecoration(
@@ -247,8 +182,6 @@ class _TransactionFormState extends State<TransactionForm> {
                     borderRadius: BorderRadius.circular(defaultRadius),
                   ),
                 ),
-                onChanged: (value) =>
-                    widget.userInfo.transactions?.itemName = value,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Vui lòng nhập thông tin chi tiết';
@@ -265,6 +198,12 @@ class _TransactionFormState extends State<TransactionForm> {
               child: TextFormField(
                 readOnly: true,
                 controller: dateCtl,
+                onChanged: (newValue) {
+                  _updateDateTime(newValue);
+                },
+                onSaved: (newValue) {
+                  _updateDateTime(newValue!);
+                },
                 decoration: InputDecoration(
                   labelText: "Thời gian giao dịch",
                   hintText: 'Nhập thời gian giao dịch',
@@ -277,26 +216,8 @@ class _TransactionFormState extends State<TransactionForm> {
                   ),
                 ),
                 onTap: () async {
-                  DateTime? date = DateTime(1900);
-                  FocusScope.of(context).requestFocus(FocusNode());
-                  date = await showDatePicker(
-                      context: context,
-                      firstDate: DateTime(1900),
-                      initialEntryMode: DatePickerEntryMode.calendarOnly,
-                      initialDate: DateTime.now(),
-                      lastDate: DateTime(2100));
-                  if (date != null) {
-                    DateTime() = date;
-                    final TimeOfDay? selectedTime = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.fromDateTime(date));
-                    dateCtl.text = DateFormat('dd/MM/yyyy HH:mm').format(
-                        DateTime(date.year, date.month, date.day,
-                            selectedTime!.hour, selectedTime.minute));
-                  }
+                  await _showDateTimePicker(context);
                 },
-                onChanged: (value) =>
-                    widget.userInfo.transactions?.date = value,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Vui lòng nhập thời gian diễn ra giao dịch';
@@ -316,6 +237,12 @@ class _TransactionFormState extends State<TransactionForm> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: TextFormField(
+                onChanged: (newValue) {
+                  _updateAmount(newValue);
+                },
+                onSaved: (newValue) {
+                  _updateAmount(newValue!);
+                },
                 controller: moneyCtl,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -324,8 +251,6 @@ class _TransactionFormState extends State<TransactionForm> {
                   hintText: 'Nhập giá trị',
                 ),
                 keyboardType: TextInputType.number,
-                onChanged: (value) =>
-                    widget.userInfo.transactions?.amount = value,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Vui lòng nhập số tiền';
@@ -342,11 +267,87 @@ class _TransactionFormState extends State<TransactionForm> {
       ),
     );
   }
-}
 
-Future<void> saveUserTransactions(UserInfo userInfo) async {
-  return await Localstore.instance
-      .collection('users')
-      .doc('transaction')
-      .set(userInfo.toMap());
+  void _updateTransactionType(String? newValue) {
+    if (newValue != null) {
+      setState(() {
+        Transaction newTransaction = Transaction(
+          transactionType: newValue,
+        );
+        widget.userInfo.transactions?.add(newTransaction);
+      });
+    }
+  }
+
+  void _updateItemCategoryType(String? newValue) {
+    if (newValue != null) {
+      setState(() {
+        Transaction? currentTransaction =
+            widget.userInfo.transactions?.lastOrNull;
+        if (currentTransaction != null) {
+          currentTransaction.itemCategoryType = newValue;
+        }
+      });
+    }
+  }
+
+  void _updateItemName(String value) {
+    setState(() {
+      Transaction? currentTransaction =
+          widget.userInfo.transactions?.lastOrNull;
+      if (currentTransaction != null) {
+        currentTransaction.itemName = value;
+      }
+    });
+  }
+
+  void _updateDateTime(String value) {
+    setState(() {
+      Transaction? currentTransaction =
+          widget.userInfo.transactions?.lastOrNull;
+      if (currentTransaction != null) {
+        currentTransaction.date = value;
+      }
+    });
+  }
+
+  void _updateAmount(String value) {
+    setState(() {
+      Transaction? currentTransaction =
+          widget.userInfo.transactions?.lastOrNull;
+      if (currentTransaction != null) {
+        currentTransaction.amount = value;
+      }
+    });
+  }
+
+  Future<void> _showDateTimePicker(BuildContext context) async {
+    DateTime? selectedDateTime = await showDatePicker(
+      context: context,
+      firstDate: DateTime(1900),
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
+      initialDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+
+    if (selectedDateTime != null) {
+      TimeOfDay? selectedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(selectedDateTime),
+      );
+
+      if (selectedTime != null) {
+        selectedDateTime = DateTime(
+          selectedDateTime.year,
+          selectedDateTime.month,
+          selectedDateTime.day,
+          selectedTime.hour,
+          selectedTime.minute,
+        );
+
+        dateCtl.text = DateFormat('dd/MM/yyyy HH:mm').format(selectedDateTime);
+        _updateDateTime(dateCtl.text);
+      }
+    }
+  }
 }
