@@ -90,8 +90,8 @@ class HomeProfileTab extends StatelessWidget {
                       height: defaultSpacing / 4,
                     ),
                     const ProfileAccountInfoTitle(
-                        title: "Giới tính",//userdata.gender
-                        subTitle: "f" ,
+                        title: "Giới tính", //userdata.gender
+                        subTitle: "f",
                         imageUrl: 'f' == "Nữ"
                             ? "assest/icon/female-icon.png"
                             : "assest/icon/male-icon.png"),
