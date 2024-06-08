@@ -61,7 +61,7 @@ class UserInfo extends ChangeNotifier {
       int transactionAmount = int.parse(transaction.amount ?? '0');
       outflow = (currentOutflow + transactionAmount).toString();
     }
-    updateTotalBalance(); // Call the method to recalculate total balance
+    updateTotalBalance();
   }
 
   void deleteTransaction(Transaction transaction) {
@@ -75,7 +75,7 @@ class UserInfo extends ChangeNotifier {
       int transactionAmount = int.parse(transaction.amount ?? '0');
       outflow = (currentOutflow - transactionAmount).toString();
     }
-    updateTotalBalance(); // Call the method to recalculate total balance
+    updateTotalBalance();
   }
 
   void updateTotalBalance() {
@@ -135,8 +135,8 @@ UserInfo getMockUserInfo() {
     name: 'John Doe',
     gender: 'Male',
     birthday: '1990-01-01',
-    totalBalance: '1000',
-    inflow: '0',
+    totalBalance: '',
+    inflow: '1110',
     outflow: '0',
     transactions: null, // No transactions for testing
   );
