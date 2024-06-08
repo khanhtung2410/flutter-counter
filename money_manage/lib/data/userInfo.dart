@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-class UserInfo {
+import 'package:flutter/foundation.dart';
+
+class UserInfo extends ChangeNotifier {
   String? name;
   String? gender;
   String? birthday;
@@ -16,7 +18,10 @@ class UserInfo {
     this.inflow,
     this.outflow,
     List<Transaction>? transactions,
-  }) : transactions = transactions ?? [];
+  }) {
+    this.transactions = transactions ?? [];
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'name': name,
@@ -43,6 +48,29 @@ class UserInfo {
               .toList() ??
           [],
     );
+  }
+
+  void addTransaction(Transaction transaction) {
+    transactions?.add(transaction);
+    if (transaction.transactionType == 'Inflow') {
+      int currentInflow = int.parse(inflow ?? '0');
+      int transactionAmount = int.parse(transaction.amount ?? '0');
+      inflow = (currentInflow + transactionAmount).toString();
+    }
+    notifyListeners();
+  }
+
+  void deleteTransaction(Transaction transaction) {
+    transactions?.remove(transaction);
+    notifyListeners();
+  }
+
+  void printTransactions() {
+    if (transactions != null) {
+      for (Transaction transaction in transactions!) {
+        print(transaction.amount);
+      }
+    }
   }
 }
 
