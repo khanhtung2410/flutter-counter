@@ -269,15 +269,15 @@ class _TransactionFormState extends State<TransactionForm> {
   }
 
   void _updateTransactionType(String? newValue) {
-    if (newValue != null) {
-      setState(() {
-        Transaction newTransaction = Transaction(
-          transactionType: newValue,
-        );
-        widget.userInfo.transactions?.add(newTransaction);
-      });
-    }
+  if (newValue != null) {
+    setState(() {
+      Transaction newTransaction = Transaction(
+        transactionType: newValue,
+      );
+      widget.userInfo.transactions!.add(newTransaction);
+    });
   }
+}
 
   void _updateItemCategoryType(String? newValue) {
     if (newValue != null) {
