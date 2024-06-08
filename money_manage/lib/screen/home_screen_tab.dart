@@ -64,7 +64,7 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
                     ),
                     const SizedBox(height: defaultSpacing / 2),
                     Text(
-                      "${userInfo.totalBalance ?? "0"} vnđ",
+                      "${value.totalBalance ?? "0"} vnđ",
                       style: Theme.of(context)
                           .textTheme
                           .titleLarge
@@ -74,24 +74,24 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
                 ),
               ),
               const SizedBox(height: defaultSpacing * 2),
-              const Row(
+               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
                     child: IncomeExpenseCard(
                       expenseData: ExpenseData(
                         'Thu nhập',
-                        "${"userInfo.inflow" ?? "0"} vnđ",
+                        "${value.inflow ?? "0"} vnđ",
                         Icons.arrow_upward_rounded,
                       ),
                     ),
                   ),
-                  SizedBox(width: defaultSpacing),
+                  const SizedBox(width: defaultSpacing),
                   Expanded(
                     child: IncomeExpenseCard(
                       expenseData: ExpenseData(
                         'Chi tiêu',
-                        "${"userInfo.outflow" ?? "0"} vnđ",
+                        "${value.outflow ?? "0"} vnđ",
                         Icons.arrow_downward_rounded,
                       ),
                     ),
