@@ -2,6 +2,7 @@
 
 import 'package:flutter/foundation.dart';
 
+//Tạo class Userinfo liên kết với ChangeNotifier để nhận biết thay đổi
 class UserInfo extends ChangeNotifier {
   String? name;
   String? gender;
@@ -9,6 +10,7 @@ class UserInfo extends ChangeNotifier {
   String? totalBalance;
   String? inflow;
   String? outflow;
+  //Dùng danh sách để lưu nhiều dữ liệu
   List<Transaction>? transactions;
   UserInfo({
     this.name,
@@ -17,11 +19,13 @@ class UserInfo extends ChangeNotifier {
     this.totalBalance,
     this.inflow,
     this.outflow,
+    //Lấy biến lưu trữ
     List<Transaction>? transactions,
   }) {
+    //Nếu không có giao dịch, mặc định là danh sách rỗng
     this.transactions = transactions ?? [];
   }
-
+  //Chuyển thành map
   Map<String, dynamic> toMap() {
     return {
       'name': name,
@@ -50,52 +54,63 @@ class UserInfo extends ChangeNotifier {
     );
   }
 
+  //Function thêm giao dịch với biến đầu vào là transaction
   void addTransaction(Transaction transaction) {
+    //Thêm transaction vào danh sách
     transactions?.add(transaction);
-    if (transaction.transactionType == 'Inflow') {
+    //Kiểm tra loại giao dịch và cập nhật dòng tiền
+    if (transaction.transactionType == 'Thu') {
       int currentInflow = int.parse(inflow ?? '0');
       int transactionAmount = int.parse(transaction.amount ?? '0');
       inflow = (currentInflow + transactionAmount).toString();
-    } else if (transaction.transactionType == 'Outflow') {
+    } else if (transaction.transactionType == 'Chi') {
       int currentOutflow = int.parse(outflow ?? '0');
       int transactionAmount = int.parse(transaction.amount ?? '0');
       outflow = (currentOutflow + transactionAmount).toString();
     }
+    //Gọi function cập nhật tổng tiền
     updateTotalBalance();
   }
 
+  //Function xóa giao dịch với biến đầu vào là transaction
   void deleteTransaction(Transaction transaction) {
+    //Bỏ transaction khỏi danh sách
     transactions?.remove(transaction);
-    if (transaction.transactionType == 'Inflow') {
+    //Kiểm tra loại giao dịch và cập nhật dòng tiền
+    if (transaction.transactionType == 'Thu') {
       int currentInflow = int.parse(inflow ?? '0');
       int transactionAmount = int.parse(transaction.amount ?? '0');
       inflow = (currentInflow - transactionAmount).toString();
-    } else if (transaction.transactionType == 'Outflow') {
+    } else if (transaction.transactionType == 'Chi') {
       int currentOutflow = int.parse(outflow ?? '0');
       int transactionAmount = int.parse(transaction.amount ?? '0');
       outflow = (currentOutflow - transactionAmount).toString();
     }
+    //Gọi function cập nhật tổng tiền
     updateTotalBalance();
   }
 
+  //Function cập nhật tổng tiền
   void updateTotalBalance() {
     int inflowValue = int.parse(inflow ?? '0');
     int outflowValue = int.parse(outflow ?? '0');
+    //Tính lại dòng tiền
     int total = inflowValue - outflowValue;
     totalBalance = total.toString();
+    //Thông báo có thay đổi
     notifyListeners();
   }
 }
-
-List<String> transactionTypes = <String>['Inflow', 'Outflow'];
-
+//Danh sách loại giao dịch
+List<String> transactionTypes = <String>['Thu', 'Chi'];
+//Danh sách mục giao dịch
 List<String> itemCategoryTypes = <String>[
   'Cá nhân',
   'Già đình',
   'Quà',
   'Đồ ăn'
 ];
-
+//Lớp giao dịch
 class Transaction {
   String? transactionType;
   String? itemCategoryType;
@@ -129,12 +144,12 @@ class Transaction {
     );
   }
 }
-
+//Lớp dữ liệu tạo
 UserInfo getMockUserInfo() {
   return UserInfo(
     name: 'John Doe',
-    gender: 'Male',
-    birthday: '1990-01-01',
+    gender: 'Nữ',
+    birthday: '01/01/1990',
     totalBalance: '',
     inflow: '1110',
     outflow: '0',
