@@ -4,24 +4,31 @@ import 'package:flutter/material.dart';
 import 'package:money_manage/data/userInfo.dart';
 import 'package:money_manage/ultils/colors_and_size.dart';
 
+//Tạo lớp hiển thị giao dịch
 class TransactionItemTile extends StatelessWidget {
+  //Lấy biến từ lớp transaction
   final Transaction? transaction;
   const TransactionItemTile({
     Key? key,
     required this.transaction,
   }) : super(key: key);
 
+  //Lấy màu ngẫu nhiên
   Color getRandomBgColor() {
     return Color(Random().nextInt(0XFF000000));
   }
 
+  //Lấy dấu giao dịch
   String getSign(String? a) {
     switch (a) {
-      case "Outflow":
+      //Nếu là chi thì có "-" ở trước vd: - 200
+      case "Chi":
         return "-";
-      case "Inflow":
+      //Nếu là thu thì có "+" ở trước vd: + 200
+      case "Thu":
         return "+";
     }
+    //Trả về "" nếu không có gì
     return "";
   }
 
@@ -54,7 +61,8 @@ class TransactionItemTile extends StatelessWidget {
             child: const Icon(Icons.supervised_user_circle_sharp),
           ),
           title: Text(
-            transaction?.itemCategoryType ?? "No category", // Handle null case
+            //Lấy dữ liệu mục giao dịch nhập vào và bắt lỗi null
+            transaction?.itemCategoryType ?? "No category",
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: fontHeading,
                   fontSize: fontSizeTitle,
@@ -62,7 +70,8 @@ class TransactionItemTile extends StatelessWidget {
                 ),
           ),
           subtitle: Text(
-            transaction?.itemName ?? "No name", // Handle null case
+            //Lấy dữ liệu chi tiết giao dịch nhập vào và bắt lỗi null
+            transaction?.itemName ?? "No name",
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: fontSubheading,
                   fontSize: fontSizeBody,
@@ -73,16 +82,18 @@ class TransactionItemTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                "${getSign(transaction?.transactionType)} ${transaction?.amount ?? ""} vnđ", // Handle null cases
+                //Lấy dữ liệu loại giao dịch nhập vào và bắt lỗi null
+                "${getSign(transaction?.transactionType)} ${transaction?.amount ?? ""} vnđ",
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: transaction?.transactionType == 'Outflow'
+                      color: transaction?.transactionType == 'Chi'
                           ? Colors.red
                           : fontHeading,
                       fontSize: fontSizeTitle,
                     ),
               ),
               Text(
-                transaction?.date ?? "No date", // Handle null case
+                //Lấy dữ liệu ngày giao dịch nhập vào và bắt lỗi null
+                transaction?.date ?? "No date",
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: fontSubheading,
                       fontSize: fontSizeBody,

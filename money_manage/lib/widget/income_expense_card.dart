@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_manage/ultils/colors_and_size.dart';
-
+//Tạo lớp hiển thị dòng tiền
 class ExpenseData {
   final String label;
   final String amount;

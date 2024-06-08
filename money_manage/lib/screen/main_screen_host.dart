@@ -456,14 +456,14 @@ class _MainScreenHostState extends State<MainScreenHost> {
           SpeedDialChild(
             child: Icon(Icons.add),
             backgroundColor: Colors.green,
-            label: 'Add Transaction',
+            label: 'Thêm giao dịch',
             onTap: addTransaction,
           ),
           //Nút đến funtion xóa giao dịch
           SpeedDialChild(
             child: Icon(Icons.delete),
             backgroundColor: Colors.orange,
-            label: 'Delete Transaction',
+            label: 'Xóa giao dịch',
             onTap: deleteTransaction,
           ),
         ],
