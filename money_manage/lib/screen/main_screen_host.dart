@@ -1,14 +1,14 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
+import 'package:money_manage/data/localstore.dart';
 import 'package:money_manage/data/userInfo.dart';
-import 'package:money_manage/screen/add_transaction_tab.dart';
 import 'package:money_manage/screen/home_profile_tab.dart';
 import 'package:money_manage/screen/home_screen_tab.dart';
 import 'package:money_manage/ultils/colors_and_size.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 class MainScreenHost extends StatefulWidget {
   const MainScreenHost({super.key});
@@ -21,7 +21,7 @@ class _MainScreenHostState extends State<MainScreenHost> {
   var currentIndex = 0;
 
   final formKey = GlobalKey<FormState>();
-
+  //Tạo controler
   final transactionCtl = TextEditingController();
   final categoryCtl = TextEditingController();
   final moneyCtl = TextEditingController();
@@ -30,13 +30,13 @@ class _MainScreenHostState extends State<MainScreenHost> {
 
   String dropdownTransaction = transactionTypes.first;
   String dropdownCategory = itemCategoryTypes.first;
-
+  //Tạo switch chuyển tab
   Widget buildTabContent(int index) {
     switch (index) {
       case 0:
         return HomeScreenTab();
       case 1:
-        return const AddTransactionTab();
+        return HomeScreenTab();
       case 2:
         return Container();
       case 3:
@@ -46,199 +46,206 @@ class _MainScreenHostState extends State<MainScreenHost> {
     }
   }
 
+  //Function thêm giao dịch
   void addTransaction() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text("Thêm giao dịch"),
-        content: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const SizedBox(
-                height: defaultSpacing * 3,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: DropdownButtonFormField<String>(
-                  onChanged: (newValue) {
-                    dropdownTransaction = newValue!;
-                  },
-                  onSaved: (newValue) {
-                    transactionCtl.text = newValue!;
-                  },
-                  decoration: InputDecoration(
-                    label: const Text('Loại chi'),
-                    labelStyle: const TextStyle(
-                      fontSize: fontSizeHeading,
-                      fontWeight: FontWeight.w500,
+        content: SingleChildScrollView(
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  //Form chọn loại chi
+                  child: DropdownButtonFormField<String>(
+                    onChanged: (newValue) {
+                      dropdownTransaction = newValue!;
+                    },
+                    onSaved: (newValue) {
+                      transactionCtl.text = newValue!;
+                    },
+                    decoration: InputDecoration(
+                      label: const Text('Loại chi'),
+                      labelStyle: const TextStyle(
+                        fontSize: fontSizeHeading,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(defaultRadius),
+                      ),
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(defaultRadius),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Vui lòng chọn loại giao dịch';
-                    }
-                    return null;
-                  },
-                  value: dropdownTransaction,
-                  items: transactionTypes
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ),
-              ),
-              const SizedBox(
-                height: defaultSpacing,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: DropdownButtonFormField<String>(
-                  onChanged: (newValue) {
-                    dropdownCategory = newValue!;
-                  },
-                  onSaved: (newValue) {
-                    categoryCtl.text = newValue!;
-                  },
-                  decoration: InputDecoration(
-                    label: const Text('Mục chi'),
-                    labelStyle: const TextStyle(
-                      fontSize: fontSizeHeading,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(defaultRadius),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Vui lòng chọn loại giao dịch';
-                    }
-                    return null;
-                  },
-                  value: dropdownCategory,
-                  items: itemCategoryTypes
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ),
-              ),
-              const SizedBox(
-                height: defaultSpacing,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: TextFormField(
-                  onSaved: (newValue) {
-                    detailCtl.text = (newValue!);
-                  },
-                  controller: detailCtl,
-                  keyboardType: TextInputType.name,
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(
-                    label: const Text('Chi tiết'),
-                    labelStyle: const TextStyle(
-                      fontSize: fontSizeTitle,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(defaultRadius),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập thông tin chi tiết';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              const SizedBox(
-                height: defaultSpacing,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: TextFormField(
-                  readOnly: true,
-                  controller: dateCtl,
-                  onChanged: (newValue) {
-                    dateCtl.text = newValue;
-                  },
-                  onSaved: (newValue) {
-                    dateCtl.text = newValue!;
-                  },
-                  decoration: InputDecoration(
-                    labelText: "Thời gian giao dịch",
-                    hintText: 'Nhập thời gian giao dịch',
-                    labelStyle: const TextStyle(
-                      fontSize: fontSizeTitle,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(defaultRadius),
-                    ),
-                  ),
-                  onTap: () async {
-                    await _showDateTimePicker(context);
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập thời gian diễn ra giao dịch';
-                    }
-                    try {
-                      DateFormat('dd/MM/yyyy HH:mm').parse(value);
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Vui lòng chọn loại giao dịch';
+                      }
                       return null;
-                    } catch (e) {
-                      return 'Thời gian giao dịch không hợp lệ';
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(
-                height: defaultSpacing,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: TextFormField(
-                  onSaved: (newValue) {
-                    moneyCtl.text = (newValue!);
-                  },
-                  controller: moneyCtl,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(defaultRadius),
-                    ),
-                    hintText: 'Nhập giá trị',
+                    },
+                    value: dropdownTransaction,
+                    items: transactionTypes
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
                   ),
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập số tiền';
-                    }
-                    return null;
-                  },
                 ),
-              ),
-              const SizedBox(
-                height: defaultSpacing,
-              ),
-            ],
+                const SizedBox(
+                  height: defaultSpacing,
+                ),
+                //Form chọn mục chi
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: DropdownButtonFormField<String>(
+                    onChanged: (newValue) {
+                      dropdownCategory = newValue!;
+                    },
+                    onSaved: (newValue) {
+                      categoryCtl.text = newValue!;
+                    },
+                    decoration: InputDecoration(
+                      label: const Text('Mục chi'),
+                      labelStyle: const TextStyle(
+                        fontSize: fontSizeHeading,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(defaultRadius),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Vui lòng chọn mục chi';
+                      }
+                      return null;
+                    },
+                    value: dropdownCategory,
+                    items: itemCategoryTypes
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                const SizedBox(
+                  height: defaultSpacing,
+                ),
+                //Form nhập chi tiết giao dịch
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: TextFormField(
+                    onSaved: (newValue) {
+                      detailCtl.text = (newValue!);
+                    },
+                    controller: detailCtl,
+                    keyboardType: TextInputType.name,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      label: const Text('Chi tiết'),
+                      labelStyle: const TextStyle(
+                        fontSize: fontSizeTitle,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(defaultRadius),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Vui lòng nhập thông tin chi tiết';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: defaultSpacing,
+                ),
+                //Form chọn ngày giờ
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: TextFormField(
+                    readOnly: true,
+                    controller: dateCtl,
+                    onChanged: (newValue) {
+                      dateCtl.text = newValue;
+                    },
+                    onSaved: (newValue) {
+                      dateCtl.text = newValue!;
+                    },
+                    decoration: InputDecoration(
+                      labelText: "Thời gian giao dịch",
+                      hintText: 'Nhập thời gian giao dịch',
+                      labelStyle: const TextStyle(
+                        fontSize: fontSizeTitle,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(defaultRadius),
+                      ),
+                    ),
+                    onTap: () async {
+                      await _showDateTimePicker(context);
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Vui lòng nhập thời gian diễn ra giao dịch';
+                      }
+                      try {
+                        DateFormat('dd/MM/yyyy HH:mm').parse(value);
+                        return null;
+                      } catch (e) {
+                        return 'Thời gian giao dịch không hợp lệ';
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: defaultSpacing,
+                ),
+                //Form nhập số tiền
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: TextFormField(
+                    onSaved: (newValue) {
+                      moneyCtl.text = (newValue!);
+                    },
+                    controller: moneyCtl,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(defaultRadius),
+                      ),
+                      hintText: 'Nhập giá trị',
+                    ),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Vui lòng nhập số tiền';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: defaultSpacing,
+                ),
+              ],
+            ),
           ),
         ),
         actions: [
+          //Nút đến funcion lưu
           MaterialButton(
             onPressed: save,
             child: Text('Lưu'),
           ),
+          //Nút hủy form
           MaterialButton(
             onPressed: cancel,
             child: Text('Hủy'),
@@ -248,7 +255,80 @@ class _MainScreenHostState extends State<MainScreenHost> {
     );
   }
 
+  //Function xóa giao dịch
+  void deleteTransaction() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Xóa giao dịch"),
+        content: Consumer<UserInfo>(
+          //Kiểm tra xem có giao dịch không
+          builder: (context, value, child) {
+            final transactions = value.transactions;
+            if (transactions == null || transactions.isEmpty) {
+              return Center(
+                child: Text("Không có giao dịch"),
+              );
+            } else {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  //Hiện danh sách giao dịch
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: transactions.length,
+                    itemBuilder: (context, index) {
+                      Transaction? transaction = transactions[index];
+                      return ListTile(
+                        title: Text(transaction?.itemName ?? ''),
+                        subtitle: Text(transaction?.transactionType ?? ''),
+                        trailing: Text(transaction?.amount ?? ''),
+                        onTap: () {
+                          //Hiện thông báo khi xóa
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text("Xác nhận"),
+                              content: Text(
+                                  "Bạn có chắc chắn muốn xóa giao dịch này?"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    //Đóng cửa sổ xác nhận
+                                    Navigator.of(context).pop();
+                                    //Xóa giao dịch
+                                    value.deleteTransaction(transaction);
+                                    //Đóng danh sách giao dịch
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('Xóa'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    // Đóng cửa số xác nhận
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('Hủy'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  //Function hiện chọn ngày và giờ
   Future<void> _showDateTimePicker(BuildContext context) async {
+    //Hiện bộ chọn ngày với biến selectedDateTime
     DateTime? selectedDateTime = await showDatePicker(
       context: context,
       firstDate: DateTime(1900),
@@ -256,13 +336,14 @@ class _MainScreenHostState extends State<MainScreenHost> {
       initialDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
-
+    //Nếu ngày được chọn, hiện bộ chọn giờ với ngày được chọn ở biến selectedDateTime
     if (selectedDateTime != null) {
+      //Hiện bộ chọn giờ với biến selectedTime
       TimeOfDay? selectedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.fromDateTime(selectedDateTime),
       );
-
+      //Nếu selectedTime không null, chuyển vào DateTime biến vừa chọn
       if (selectedTime != null) {
         selectedDateTime = DateTime(
           selectedDateTime.year,
@@ -271,16 +352,19 @@ class _MainScreenHostState extends State<MainScreenHost> {
           selectedTime.hour,
           selectedTime.minute,
         );
-
+        //Format lại DateTime vào controller
         dateCtl.text = DateFormat('dd/MM/yyyy HH:mm').format(selectedDateTime);
       }
     }
   }
 
+  //Function lưu
   void save() {
     try {
+      //Kiểm tra state của form có hợp lệ không
       if (formKey.currentState!.validate()) {
         formKey.currentState!.save();
+        //Tạo transaction mới với dữ liệu là các controller từ form
         Transaction transaction = Transaction(
           transactionType: transactionCtl.text,
           itemCategoryType: categoryCtl.text,
@@ -288,16 +372,40 @@ class _MainScreenHostState extends State<MainScreenHost> {
           amount: moneyCtl.text,
           date: dateCtl.text,
         );
-        Provider.of<UserInfo>(context, listen: false)
-            .addTransaction(transaction);
+        //Lấy dữ liệu từ Provider cao hơn
+        UserInfo userInfo = Provider.of<UserInfo>(context, listen: false);
+        //Kiểm tra loại giao dịch và cập nhật dòng tiền 
+        if (transaction.transactionType == 'Thu') {
+          int currentInflow = int.parse(userInfo.inflow ?? '0');
+          int transactionAmount = int.parse(transaction.amount ?? '0');
+          userInfo.inflow = (currentInflow + transactionAmount).toString();
+        } else if (transaction.transactionType == 'Chi') {
+          int currentOutflow = int.parse(userInfo.outflow ?? '0');
+          int transactionAmount = int.parse(transaction.amount ?? '0');
+          userInfo.outflow = (currentOutflow + transactionAmount).toString();
+        }
+        //Cập nhật tổng tiền
+        int inflowValue = int.parse(userInfo.inflow ?? '0');
+        int outflowValue = int.parse(userInfo.outflow ?? '0');
+        int totalBalance = inflowValue - outflowValue;
+        userInfo.totalBalance = totalBalance.toString();
+
+        //Lưu giao dịch vào class userInfo
+        userInfo.addTransaction(transaction);
+        //Lưu dữ liệu giao dịch và người dùng vào localStorage
+        LocalStorageManager.saveUserInfo(userInfo);
+        LocalStorageManager.saveTransaction(transaction);
+        //Báo cho wiget liên quan đến UserInfo là có thay đổi dữ liệu
+        Provider.of<UserInfo>(context, listen: false).notifyListeners();
       }
     } catch (e) {
+      //Bắt lỗi
       print("Error saving transaction: $e");
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text("Loi"),
-          content: Text("Co loi xay ra khi luu giao dich. Xin hay thu lai"),
+          title: Text("Lỗi"),
+          content: Text("Có lỗi xảy ra khi lưu giao dịch. Xin hãy thử lại"),
           actions: [
             TextButton(
               onPressed: () {
@@ -309,14 +417,18 @@ class _MainScreenHostState extends State<MainScreenHost> {
         ),
       );
     }
+    //Gọi function làm sạch form
     clear();
   }
 
+  //Function hủy
   void cancel() {
+    //Đẩy ra khỏi thông báo và xóa dữ liệu ở controller
     Navigator.pop(context);
     clear();
   }
 
+  //Function xóa hết dữ liệu nhập ở controller
   void clear() {
     moneyCtl.clear();
     dateCtl.clear();
@@ -328,26 +440,37 @@ class _MainScreenHostState extends State<MainScreenHost> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //Tạo các màn hình khác nhau
       body: buildTabContent(currentIndex),
-      
-      floatingActionButton: Container(
-        margin: const EdgeInsets.only(top: 10),
-        height: 64,
-        width: 64,
-        child: FloatingActionButton(
-          backgroundColor: background,
-          elevation: 0,
-          onPressed: addTransaction,
-          shape: RoundedRectangleBorder(
-              side: const BorderSide(width: 3, color: primaryLight),
-              borderRadius: BorderRadius.circular(100)),
-          child: const Icon(
-            Icons.add,
-            color: primaryDark,
+      //Nút bấm ở góc phải bên dưới màn hình để đến hai function thêm và xóa giao dịch
+      floatingActionButton: SpeedDial(
+        //Tạo kiểu
+        animatedIcon: AnimatedIcons.menu_close,
+        animatedIconTheme: IconThemeData(size: 22.0),
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        elevation: 8.0,
+        shape: CircleBorder(),
+        children: [
+          //Nút đến funtion thêm giao dịch
+          SpeedDialChild(
+            child: Icon(Icons.add),
+            backgroundColor: Colors.green,
+            label: 'Add Transaction',
+            onTap: addTransaction,
           ),
-        ),
+          //Nút đến funtion xóa giao dịch
+          SpeedDialChild(
+            child: Icon(Icons.delete),
+            backgroundColor: Colors.orange,
+            label: 'Delete Transaction',
+            onTap: deleteTransaction,
+          ),
+        ],
       ),
+      //Thanh để đến các màn hình khác nhau
       bottomNavigationBar: BottomNavigationBar(
+        //Lấy vị trí trong danh sách tab
         currentIndex: currentIndex,
         onTap: (index) {
           setState(() {
@@ -357,6 +480,7 @@ class _MainScreenHostState extends State<MainScreenHost> {
         selectedItemColor: secondaryDark,
         unselectedItemColor: fontLight,
         items: [
+          //Các màn hình khác nhau 
           BottomNavigationBarItem(
               icon: Image.asset('assest/icon/home_icon.png'),
               label: "Trang chủ"),
