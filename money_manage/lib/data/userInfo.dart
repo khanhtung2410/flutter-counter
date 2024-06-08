@@ -56,21 +56,34 @@ class UserInfo extends ChangeNotifier {
       int currentInflow = int.parse(inflow ?? '0');
       int transactionAmount = int.parse(transaction.amount ?? '0');
       inflow = (currentInflow + transactionAmount).toString();
+    } else if (transaction.transactionType == 'Outflow') {
+      int currentOutflow = int.parse(outflow ?? '0');
+      int transactionAmount = int.parse(transaction.amount ?? '0');
+      outflow = (currentOutflow + transactionAmount).toString();
     }
-    notifyListeners();
+    updateTotalBalance(); // Call the method to recalculate total balance
   }
 
   void deleteTransaction(Transaction transaction) {
     transactions?.remove(transaction);
-    notifyListeners();
+    if (transaction.transactionType == 'Inflow') {
+      int currentInflow = int.parse(inflow ?? '0');
+      int transactionAmount = int.parse(transaction.amount ?? '0');
+      inflow = (currentInflow - transactionAmount).toString();
+    } else if (transaction.transactionType == 'Outflow') {
+      int currentOutflow = int.parse(outflow ?? '0');
+      int transactionAmount = int.parse(transaction.amount ?? '0');
+      outflow = (currentOutflow - transactionAmount).toString();
+    }
+    updateTotalBalance(); // Call the method to recalculate total balance
   }
 
-  void printTransactions() {
-    if (transactions != null) {
-      for (Transaction transaction in transactions!) {
-        print(transaction.amount);
-      }
-    }
+  void updateTotalBalance() {
+    int inflowValue = int.parse(inflow ?? '0');
+    int outflowValue = int.parse(outflow ?? '0');
+    int total = inflowValue - outflowValue;
+    totalBalance = total.toString();
+    notifyListeners();
   }
 }
 
@@ -123,8 +136,8 @@ UserInfo getMockUserInfo() {
     gender: 'Male',
     birthday: '1990-01-01',
     totalBalance: '1000',
-    inflow: '500',
-    outflow: '300',
+    inflow: '0',
+    outflow: '0',
     transactions: null, // No transactions for testing
   );
 }
