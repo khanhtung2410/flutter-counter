@@ -101,6 +101,7 @@ class UserInfo extends ChangeNotifier {
     notifyListeners();
   }
 }
+
 //Danh sách loại giao dịch
 List<String> transactionTypes = <String>['Thu', 'Chi'];
 //Danh sách mục giao dịch
@@ -110,6 +111,7 @@ List<String> itemCategoryTypes = <String>[
   'Quà',
   'Đồ ăn'
 ];
+
 //Lớp giao dịch
 class Transaction {
   String? transactionType;
@@ -143,7 +145,27 @@ class Transaction {
       date: map['date'],
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Transaction &&
+          runtimeType == other.runtimeType &&
+          transactionType == other.transactionType &&
+          itemCategoryType == other.itemCategoryType &&
+          itemName == other.itemName &&
+          amount == other.amount &&
+          date == other.date;
+
+  @override
+  int get hashCode =>
+      transactionType.hashCode ^
+      itemCategoryType.hashCode ^
+      itemName.hashCode ^
+      amount.hashCode ^
+      date.hashCode;
 }
+
 //Lớp dữ liệu tạo
 UserInfo getMockUserInfo() {
   return UserInfo(

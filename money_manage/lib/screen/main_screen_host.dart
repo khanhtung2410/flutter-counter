@@ -374,7 +374,7 @@ class _MainScreenHostState extends State<MainScreenHost> {
         );
         //Lấy dữ liệu từ Provider cao hơn
         UserInfo userInfo = Provider.of<UserInfo>(context, listen: false);
-        //Kiểm tra loại giao dịch và cập nhật dòng tiền 
+        //Kiểm tra loại giao dịch và cập nhật dòng tiền
         if (transaction.transactionType == 'Thu') {
           int currentInflow = int.parse(userInfo.inflow ?? '0');
           int transactionAmount = int.parse(transaction.amount ?? '0');
@@ -466,6 +466,13 @@ class _MainScreenHostState extends State<MainScreenHost> {
             label: 'Xóa giao dịch',
             onTap: deleteTransaction,
           ),
+          SpeedDialChild(
+            child: Icon(Icons.change_circle),
+            backgroundColor: Color.fromARGB(255, 255, 133, 20),
+            labelBackgroundColor: Colors.white,
+            label: 'Sửa giao dịch',
+            onTap: () {},
+          ),
         ],
       ),
       //Thanh để đến các màn hình khác nhau
@@ -480,7 +487,7 @@ class _MainScreenHostState extends State<MainScreenHost> {
         selectedItemColor: secondaryDark,
         unselectedItemColor: fontLight,
         items: [
-          //Các màn hình khác nhau 
+          //Các màn hình khác nhau
           BottomNavigationBarItem(
               icon: Image.asset('assest/icon/home_icon.png'),
               label: "Trang chủ"),

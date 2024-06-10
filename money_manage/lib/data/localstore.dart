@@ -8,6 +8,9 @@ class LocalStorageManager {
     //Đợi lấy dữ liệu
     final prefs = await SharedPreferences.getInstance();
 
+    await prefs.setString('name', userInfo.name ?? '');
+    await prefs.setString('gender', userInfo.gender ?? '');
+    await prefs.setString('birthday', userInfo.birthday ?? '');
     // Chỉ cập nhật thông tin dòng tiền và bắt lỗi null
     //Chỉ cập nhật thông tin dòng tiền vì nếu cập nhật cả giao dịch thì
     //giao dịch được lưu mới sẽ ghi đè lên giao dịch cũ
@@ -27,7 +30,7 @@ class LocalStorageManager {
   //Funtion lưu giao dịch
   static Future<void> saveTransaction(Transaction transaction) async {
     final prefs = await SharedPreferences.getInstance();
-    //Lưu sô giao dịch và bắt lỗi không phải int, không có số mặc định là 0
+    //Lấy sô giao dịch và bắt lỗi không phải int, không có số mặc định là 0
     final int transactionCount = prefs.getInt('transactionCount') ?? 0;
     final int index = transactionCount; // Use the next available index
 

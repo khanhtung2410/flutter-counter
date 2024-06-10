@@ -26,6 +26,7 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
     //Gọi funtion lấy dữ liệu
     _loadUserInfo();
   }
+
   //Funtion lấy dữ liệu và kiểm tra xem dữ liệu có null không
   Future<void> _loadUserInfo() async {
     //Đợi lấy dữ liệu
@@ -71,7 +72,9 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
                     const SizedBox(height: defaultSpacing / 2),
                     Text(
                       //Lấy dữ liệu tổng tiền từ local store và thay đổi nó khi nhập giao dịch mới
-                      "${((int.tryParse(userInfo.totalBalance ?? "0") ?? 0) + (int.tryParse(value.totalBalance ?? "0") ?? 0)).toString()} vnđ",
+                      "${((int.tryParse(userInfo.totalBalance ?? "0") ?? 0) 
+                      + (int.tryParse(value.inflow ?? "0") ?? 0) / 2 - (int.tryParse(value.outflow ?? "0") ?? 0) / 2)
+                      .toString()} vnđ",
                       style: Theme.of(context)
                           .textTheme
                           .titleLarge
@@ -153,7 +156,7 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
                   ),
                   //Tạo view danh sách lấy từ local store (giao dịch mới thêm chỉ vào đây khi khởi động lại ứng dụng)
                   ListView.builder(
-                      physics: AlwaysScrollableScrollPhysics(),
+                      physics: const AlwaysScrollableScrollPhysics(),
                       shrinkWrap: true,
                       //Lấy độ dài danh sách giao dịch từ local store
                       itemCount: userInfo.transactions?.length ?? 0,
