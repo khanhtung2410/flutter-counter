@@ -41,6 +41,38 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
     }
   }
 
+  String calculateTotalBalance(UserInfo userInfo, UserInfo value) {
+    int userInfoTotalBalance = int.tryParse(userInfo.totalBalance ?? "0") ?? 0;
+    int valueInflow = int.tryParse(value.inflow ?? "0") ?? 0;
+    int valueOutflow = int.tryParse(value.outflow ?? "0") ?? 0;
+
+    // Combine userInfo's totalBalance with adjusted inflow and outflow from value
+    int totalBalance = userInfoTotalBalance +
+        (valueInflow / 2).round() -
+        (valueOutflow / 2).round();
+
+    return totalBalance.toString();
+  }
+
+  String calculateInflow(UserInfo userInfo, UserInfo value) {
+    int userInfoInflow = int.tryParse(userInfo.inflow ?? "0") ?? 0;
+    int valueInflow = int.tryParse(value.inflow ?? "0") ?? 0;
+
+    int totalInflow = userInfoInflow + (valueInflow / 2).round();
+
+    return totalInflow.toString();
+  }
+
+  String calculateOutflow(UserInfo userInfo, UserInfo value) {
+    int userInfoOutflow = int.tryParse(userInfo.outflow ?? "0") ?? 0;
+    int valueOutflow = int.tryParse(value.outflow ?? "0") ?? 0;
+
+    // Combine userInfo's totalBalance with adjusted inflow and outflow from value
+    int totalOutflow = userInfoOutflow + (valueOutflow / 2).round();
+
+    return totalOutflow.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     //Dùng Consumer để chỉnh UI khi có thay đổi liên quan đến UserInfo
@@ -49,126 +81,114 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
         return SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(defaultSpacing),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const SizedBox(height: defaultSpacing * 2),
-              ListTile(
-                //Lấy tên người dùng từ dữ liêu được lưu
-                title: Text('Xin chào! ${userInfo.name ?? ""}'),
-                leading: Image.asset("assest/picture/like.png"),
-                trailing: Image.asset('assest/icon/bell-icon.png'),
-              ),
-              const SizedBox(height: defaultSpacing * 1.5),
-              Center(
-                child: Column(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: defaultSpacing * 2),
+                ListTile(
+                  //Lấy tên người dùng từ dữ liêu được lưu
+                  title: Text('Xin chào! ${userInfo.name ?? ""}'),
+                  leading: Image.asset("assest/picture/like.png"),
+                  trailing: Image.asset('assest/icon/bell-icon.png'),
+                ),
+                const SizedBox(height: defaultSpacing * 1.5),
+                Center(
+                  child: Column(
+                    children: [
+                      Text(
+                        "Tổng tiền",
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(color: fontSubheading),
+                      ),
+                      const SizedBox(height: defaultSpacing / 2),
+                      Text(
+                        //Lấy dữ liệu tổng tiền từ local store và thay đổi nó khi nhập giao dịch mới
+                        "${calculateTotalBalance(userInfo, value)} vnđ",
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge
+                            ?.copyWith(fontWeight: FontWeight.w700),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: defaultSpacing * 2),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      "Tổng tiền",
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(color: fontSubheading),
+                    Expanded(
+                      //Lớp tự làm để trình bày dòng tiền người dùng
+                      child: IncomeExpenseCard(
+                        expenseData: ExpenseData(
+                          'Thu nhập',
+                          //Lấy dữ liệu dòng tiền thu từ local store và thay đổi nó khi nhập giao dịch mới
+                          "${calculateInflow(userInfo, value)} vnđ",
+                          Icons.arrow_upward_rounded,
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: defaultSpacing / 2),
-                    Text(
-                      //Lấy dữ liệu tổng tiền từ local store và thay đổi nó khi nhập giao dịch mới
-                      "${((int.tryParse(userInfo.totalBalance ?? "0") ?? 0) 
-                      + (int.tryParse(value.inflow ?? "0") ?? 0) / 2 - (int.tryParse(value.outflow ?? "0") ?? 0) / 2)
-                      .toString()} vnđ",
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(fontWeight: FontWeight.w700),
+                    const SizedBox(width: defaultSpacing),
+                    Expanded(
+                      child: IncomeExpenseCard(
+                        expenseData: ExpenseData(
+                          'Chi tiêu',
+                          //Lấy dữ liệu dòng tiền chi từ local store và thay đổi nó khi nhập giao dịch mới
+                          "${calculateOutflow(userInfo, value)} vnđ",
+                          Icons.arrow_downward_rounded,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: defaultSpacing * 2),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    //Lớp tự làm để trình bày dòng tiền người dùng
-                    child: IncomeExpenseCard(
-                      expenseData: ExpenseData(
-                        'Thu nhập',
-                        //Lấy dữ liệu dòng tiền thu từ local store và thay đổi nó khi nhập giao dịch mới
-                        "${((int.tryParse(userInfo.inflow ?? "0") ?? 0) + (int.tryParse(value.inflow ?? "0") ?? 0) / 2).toString()} vnđ",
-                        Icons.arrow_upward_rounded,
-                      ),
+                const SizedBox(height: defaultSpacing * 2),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Danh sách giao dịch',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(fontWeight: FontWeight.w500),
                     ),
-                  ),
-                  const SizedBox(width: defaultSpacing),
-                  Expanded(
-                    child: IncomeExpenseCard(
-                      expenseData: ExpenseData(
-                        'Chi tiêu',
-                        //Lấy dữ liệu dòng tiền chi từ local store và thay đổi nó khi nhập giao dịch mới
-                        "${((int.tryParse(userInfo.outflow ?? "0") ?? 0) + (int.tryParse(value.outflow ?? "0") ?? 0) / 2).toString()} vnđ",
-                        Icons.arrow_downward_rounded,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: defaultSpacing * 2),
-              Text(
-                'Giao dịch gần đây',
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: defaultSpacing),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Mới thêm vào',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(fontWeight: FontWeight.w500),
-                  ),
-                  //Tạo view một danh sách những giao dịch mới thêm trong lần sử dụng này
-                  ListView.builder(
+                    //Tạo view một danh sách những giao dịch mới thêm trong lần sử dụng này
+                    ListView.builder(
                       physics: AlwaysScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      //Lấy dữ liệu số giao dịch từ Consumer
-                      itemCount: value.transactions?.length ?? 0,
+                      itemCount: (value.transactions?.length ?? 0) +
+                          (userInfo.transactions?.length ?? 0),
                       itemBuilder: (context, index) {
-                        //Gán từng thành phần của danh sách trong Consumer vào lớp Transaction
-                        Transaction? transaction = value.transactions?[index];
-                        //Trả về lớp được xây để chiếu giao dịch
-                        return TransactionItemTile(transaction: transaction);
-                      }),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Giao dịch cũ',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(fontWeight: FontWeight.w500),
-                  ),
-                  //Tạo view danh sách lấy từ local store (giao dịch mới thêm chỉ vào đây khi khởi động lại ứng dụng)
-                  ListView.builder(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      //Lấy độ dài danh sách giao dịch từ local store
-                      itemCount: userInfo.transactions?.length ?? 0,
-                      itemBuilder: (context, index) {
-                        //Gán thành phần từ danh sách local store
-                        Transaction? transaction =
-                            userInfo.transactions?[index];
-                        return TransactionItemTile(transaction: transaction);
-                      }),
-                ],
-              )
-            ]),
+                        if (index < (value.transactions?.length ?? 0)) {
+                          // Danh sách giao dịch mới thêm trước
+                          Transaction? transaction = value.transactions?[index];
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (index == 0)
+                                Text(
+                                  'Mới thêm vào',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(fontWeight: FontWeight.w500),
+                                ),
+                              TransactionItemTile(transaction: transaction),
+                            ],
+                          );
+                        } else {
+                          // Danh sach giao dịch từ localstore
+                          Transaction? transaction = userInfo.transactions?[
+                              index - (value.transactions?.length ?? 0)];
+                          return TransactionItemTile(transaction: transaction);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },
