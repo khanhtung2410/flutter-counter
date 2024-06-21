@@ -1,8 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:money_manage/data/localstore.dart';
 import 'package:money_manage/data/userInfo.dart';
 import 'package:money_manage/ultils/colors_and_size.dart';
+import 'package:provider/provider.dart';
 
 //Tạo lớp hiển thị giao dịch
 class TransactionItemTile extends StatelessWidget {
@@ -32,6 +34,61 @@ class TransactionItemTile extends StatelessWidget {
     return "";
   }
 
+  void showOption(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('Bạn muốn ?'),
+              content: Row(
+                children: [
+                  TextButton(
+                      onPressed: () => deleteTransaction(context),
+                      child: Text("Xóa mục này")),
+                  TextButton(onPressed: () {}, child: Text("Sửa mục này"))
+                ],
+              ),
+            ));
+  }
+
+  //Function xóa giao dịch
+  void deleteTransaction(BuildContext context) {
+    UserInfo userInfo = Provider.of<UserInfo>(context, listen: false);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Xác nhận"),
+        content: Text("Bạn có chắc chắn muốn xóa giao dịch này?"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              //Đóng cửa sổ xác nhận
+              Navigator.of(context).pop();
+              //Xóa giao dịch
+              if (transaction != null) {
+                userInfo.deleteTransaction(transaction!);
+                LocalStorageManager.saveTransaction(transaction!);
+                // Notify listeners
+                Provider.of<UserInfo>(context, listen: false).notifyListeners();
+              }
+              //Đóng muc chon
+              Navigator.of(context).pop();
+            },
+            child: const Text(
+              'Xóa',
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              // Đóng cửa số xác nhận
+              Navigator.of(context).pop();
+            },
+            child: Text('Hủy'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(children: [
@@ -50,6 +107,7 @@ class TransactionItemTile extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(defaultRadius)),
         ),
         child: ListTile(
+          onTap: () => showOption(context),
           leading: Container(
             padding: const EdgeInsets.all(defaultSpacing / 2),
             decoration: BoxDecoration(
