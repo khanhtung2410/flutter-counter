@@ -255,76 +255,7 @@ class _MainScreenHostState extends State<MainScreenHost> {
     );
   }
 
-  //Function xóa giao dịch
-  void deleteTransaction() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Xóa giao dịch"),
-        content: Consumer<UserInfo>(
-          //Kiểm tra xem có giao dịch không
-          builder: (context, value, child) {
-            final transactions = value.transactions;
-            if (transactions == null || transactions.isEmpty) {
-              return Center(
-                child: Text("Không có giao dịch"),
-              );
-            } else {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  //Hiện danh sách giao dịch
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: transactions.length,
-                    itemBuilder: (context, index) {
-                      Transaction? transaction = transactions[index];
-                      return ListTile(
-                        title: Text(transaction?.itemName ?? ''),
-                        subtitle: Text(transaction?.transactionType ?? ''),
-                        trailing: Text(transaction?.amount ?? ''),
-                        onTap: () {
-                          //Hiện thông báo khi xóa
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text("Xác nhận"),
-                              content: Text(
-                                  "Bạn có chắc chắn muốn xóa giao dịch này?"),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    //Đóng cửa sổ xác nhận
-                                    Navigator.of(context).pop();
-                                    //Xóa giao dịch
-                                    value.deleteTransaction(transaction);
-                                    //Đóng danh sách giao dịch
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Xóa'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    // Đóng cửa số xác nhận
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Hủy'),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ],
-              );
-            }
-          },
-        ),
-      ),
-    );
-  }
+ 
 
   //Function hiện chọn ngày và giờ
   Future<void> _showDateTimePicker(BuildContext context) async {
@@ -464,7 +395,7 @@ class _MainScreenHostState extends State<MainScreenHost> {
             child: Icon(Icons.delete),
             backgroundColor: Colors.orange,
             label: 'Xóa giao dịch',
-            onTap: deleteTransaction,
+            onTap: (){},
           ),
           SpeedDialChild(
             child: Icon(Icons.change_circle),
