@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -48,8 +47,8 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
 
     // Combine userInfo's totalBalance with adjusted inflow and outflow from value
     int totalBalance = userInfoTotalBalance +
-        (valueInflow / 2).round() -
-        (valueOutflow / 2).round();
+        (valueInflow).round() -
+        (valueOutflow).round();
 
     return totalBalance.toString();
   }
@@ -58,7 +57,7 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
     int userInfoInflow = int.tryParse(userInfo.inflow ?? "0") ?? 0;
     int valueInflow = int.tryParse(value.inflow ?? "0") ?? 0;
 
-    int totalInflow = userInfoInflow + (valueInflow / 2).round();
+    int totalInflow = userInfoInflow + (valueInflow).round();
 
     return totalInflow.toString();
   }
@@ -68,7 +67,7 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
     int valueOutflow = int.tryParse(value.outflow ?? "0") ?? 0;
 
     // Combine userInfo's totalBalance with adjusted inflow and outflow from value
-    int totalOutflow = userInfoOutflow + (valueOutflow / 2).round();
+    int totalOutflow = userInfoOutflow + (valueOutflow).round();
 
     return totalOutflow.toString();
   }
@@ -153,7 +152,7 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
                           .bodyMedium
                           ?.copyWith(fontWeight: FontWeight.w500),
                     ),
-                    //Tạo view một danh sách những giao dịch mới thêm trong lần sử dụng này
+                    //Tạo view một danh sách những giao dịch 
                     ListView.builder(
                       physics: AlwaysScrollableScrollPhysics(),
                       shrinkWrap: true,
@@ -178,7 +177,7 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
                             ],
                           );
                         } else {
-                          // Danh sach giao dịch từ localstore
+                          // Danh sách giao dịch từ localstore
                           Transaction? transaction = userInfo.transactions?[
                               index - (value.transactions?.length ?? 0)];
                           return TransactionItemTile(transaction: transaction);

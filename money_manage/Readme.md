@@ -17,3 +17,12 @@ Xóa giao dịch:
 2. Chọn xóa giao dịch
 3. Chọn giao dịch muốn xóa ở trong danh sách giao dịch hiện lên
 4. Nhấn xóa
+
+Road map
+Giao dịch:
+Thêm xóa giao dịch
+Thêm sửa giao dịch
+Kiểm tra lỗi gấp đôi số tiền
+Đổi số nhập để thêm dấu ","
+Giao dịch sắp xếp theo thời gian
+Có mục tiêu đề thời gian

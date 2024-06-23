@@ -66,7 +66,6 @@ class TransactionItemTile extends StatelessWidget {
               //Xóa giao dịch
               if (transaction != null) {
                 userInfo.deleteTransaction(transaction!);
-                LocalStorageManager.saveTransaction(transaction!);
                 // Notify listeners
                 Provider.of<UserInfo>(context, listen: false).notifyListeners();
               }

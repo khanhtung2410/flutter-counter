@@ -84,6 +84,7 @@ class UserInfo extends ChangeNotifier {
     } else if (transaction.transactionType == 'Chi') {
       int currentOutflow = int.parse(outflow ?? '0');
       int transactionAmount = int.parse(transaction.amount ?? '0');
+      debugPrint(transaction.amount);
       outflow = (currentOutflow - transactionAmount).toString();
     }
     //Gọi function cập nhật tổng tiền
@@ -173,7 +174,7 @@ UserInfo getMockUserInfo() {
     gender: 'Nữ',
     birthday: '01/01/1990',
     totalBalance: '',
-    inflow: '1110',
+    inflow: '0',
     outflow: '0',
     transactions: null, // No transactions for testing
   );
