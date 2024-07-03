@@ -73,6 +73,7 @@ class HomeProfileTab extends StatelessWidget {
                     ),
                   ),
                 ),
+                
                 Expanded(
                   flex: 2,
                   child: Column(

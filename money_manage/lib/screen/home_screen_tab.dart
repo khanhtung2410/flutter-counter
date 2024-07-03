@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,14 +29,23 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
   Future<void> _loadUserInfo() async {
     //Đợi lấy dữ liệu
     final userData = await LocalStorageManager.loadUserInfo();
+
     //Kiểm tra xem dữ liêu null không
     if (userData != null) {
       setState(() {
         //Nếu dữ liệu không null thì userInfo sẽ là dữ liệu từ local store
         userInfo = userData;
+        print(userInfo.transactions?.length);
         isLoaded = true;
       });
     }
+  }
+
+  void _handleDeleteTransaction(int index, UserInfo user) {
+    // Perform deletion from local storage
+    LocalStorageManager.deleteTransaction(index);
+    // Update the UI by reloading user info
+    _loadUserInfo();
   }
 
   String calculateTotalBalance(UserInfo userInfo, UserInfo value) {
@@ -46,9 +54,8 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
     int valueOutflow = int.tryParse(value.outflow ?? "0") ?? 0;
 
     // Combine userInfo's totalBalance with adjusted inflow and outflow from value
-    int totalBalance = userInfoTotalBalance +
-        (valueInflow).round() -
-        (valueOutflow).round();
+    int totalBalance =
+        userInfoTotalBalance + (valueInflow).round() - (valueOutflow).round();
 
     return totalBalance.toString();
   }
@@ -152,7 +159,7 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
                           .bodyMedium
                           ?.copyWith(fontWeight: FontWeight.w500),
                     ),
-                    //Tạo view một danh sách những giao dịch 
+                    //Tạo view một danh sách những giao dịch
                     ListView.builder(
                       physics: AlwaysScrollableScrollPhysics(),
                       shrinkWrap: true,
@@ -173,14 +180,24 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
                                       .bodyMedium
                                       ?.copyWith(fontWeight: FontWeight.w500),
                                 ),
-                              TransactionItemTile(transaction: transaction),
+                              TransactionItemTile(
+                                transaction: transaction,
+                                userInfo: value,
+                                onDelete: (index) =>
+                                    _handleDeleteTransaction(index, value),
+                              ),
                             ],
                           );
                         } else {
                           // Danh sách giao dịch từ localstore
                           Transaction? transaction = userInfo.transactions?[
                               index - (value.transactions?.length ?? 0)];
-                          return TransactionItemTile(transaction: transaction);
+                          return TransactionItemTile(
+                            transaction: transaction,
+                            userInfo: userInfo,
+                            onDelete: (index) =>
+                                _handleDeleteTransaction(index, userInfo),
+                          );
                         }
                       },
                     ),

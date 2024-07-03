@@ -306,20 +306,7 @@ class _MainScreenHostState extends State<MainScreenHost> {
         //Lấy dữ liệu từ Provider cao hơn
         UserInfo userInfo = Provider.of<UserInfo>(context, listen: false);
         //Kiểm tra loại giao dịch và cập nhật dòng tiền
-        if (transaction.transactionType == 'Thu') {
-          int currentInflow = int.parse(userInfo.inflow ?? '0');
-          int transactionAmount = int.parse(transaction.amount ?? '0');
-          userInfo.inflow = (currentInflow + transactionAmount).toString();
-        } else if (transaction.transactionType == 'Chi') {
-          int currentOutflow = int.parse(userInfo.outflow ?? '0');
-          int transactionAmount = int.parse(transaction.amount ?? '0');
-          userInfo.outflow = (currentOutflow + transactionAmount).toString();
-        }
-        //Cập nhật tổng tiền
-        int inflowValue = int.parse(userInfo.inflow ?? '0');
-        int outflowValue = int.parse(userInfo.outflow ?? '0');
-        int totalBalance = inflowValue - outflowValue;
-        userInfo.totalBalance = totalBalance.toString();
+    
 
         //Lưu giao dịch vào class userInfo
         userInfo.addTransaction(transaction);

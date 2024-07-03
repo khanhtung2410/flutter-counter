@@ -1,18 +1,21 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:money_manage/data/localstore.dart';
 import 'package:money_manage/data/userInfo.dart';
 import 'package:money_manage/ultils/colors_and_size.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 //Tạo lớp hiển thị giao dịch
 class TransactionItemTile extends StatelessWidget {
   //Lấy biến từ lớp transaction
   final Transaction? transaction;
+  final UserInfo userInfo;
+  final Function(int) onDelete;
   const TransactionItemTile({
     Key? key,
     required this.transaction,
+    required this.userInfo,
+    required this.onDelete,
   }) : super(key: key);
 
   //Lấy màu ngẫu nhiên
@@ -52,7 +55,6 @@ class TransactionItemTile extends StatelessWidget {
 
   //Function xóa giao dịch
   void deleteTransaction(BuildContext context) {
-    UserInfo userInfo = Provider.of<UserInfo>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -65,9 +67,7 @@ class TransactionItemTile extends StatelessWidget {
               Navigator.of(context).pop();
               //Xóa giao dịch
               if (transaction != null) {
-                userInfo.deleteTransaction(transaction!);
-                // Notify listeners
-                Provider.of<UserInfo>(context, listen: false).notifyListeners();
+                onDelete(userInfo.transactions!.indexOf(transaction!));
               }
               //Đóng muc chon
               Navigator.of(context).pop();

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:money_manage/data/userInfo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,10 +43,27 @@ class LocalStorageManager {
     await prefs.setString('itemName$index', transaction.itemName ?? '');
     await prefs.setString('amount$index', transaction.amount ?? '');
     await prefs.setString('date$index', transaction.date ?? '');
-
+    print(transactionCount);
     // Cập nhật bộ đếm + 1
     await prefs.setInt('transactionCount', transactionCount + 1);
   }
+
+  // Delete transaction function
+  static Future<void> deleteTransaction(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+    final int transactionCount = prefs.getInt('transactionCount') ?? 0;
+
+    // Remove all entries related to the transaction at the given index
+    await prefs.remove('transactionType$index');
+    await prefs.remove('itemCategoryType$index');
+    await prefs.remove('itemName$index');
+    await prefs.remove('amount$index');
+    await prefs.remove('date$index');
+
+    // Update the transaction count after deletion
+    await prefs.setInt('transactionCount', transactionCount - 1);
+  }
+
   //Funtion load thông tin
   static Future<UserInfo?> loadUserInfo() async {
     final prefs = await SharedPreferences.getInstance();
@@ -65,7 +83,7 @@ class LocalStorageManager {
       //Nếu bộ đếm không null
       if (transactionCount != null) {
         for (int i = 0; i < transactionCount; i++) {
-          //Gọi funtion load dữ liệu 
+          //Gọi funtion load dữ liệu
           Transaction? transaction = await loadTransaction(index: i);
           //Kiểm tra dữ liệu null không
           if (transaction != null) {
@@ -100,6 +118,7 @@ class LocalStorageManager {
     //Nếu tên null trả về null
     return null;
   }
+
   //Funtion load dữ liệu giaao dịch
   static Future<Transaction?> loadTransaction({required int index}) async {
     final prefs = await SharedPreferences.getInstance();
@@ -115,7 +134,7 @@ class LocalStorageManager {
         itemName != null &&
         amount != null &&
         date != null) {
-          //Trả về lớp với dữ liệu vừa lấy
+      //Trả về lớp với dữ liệu vừa lấy
       return Transaction(
         transactionType: transactionType,
         itemCategoryType: itemCategoryType,
