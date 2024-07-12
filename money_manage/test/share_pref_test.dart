@@ -58,4 +58,45 @@ void main() {
     // kiểm tra giao dịch
     expect(loadedTransaction, equals(transaction));
   });
+  test('delete Transaction', () async {
+    SharedPreferences.setMockInitialValues({});
+
+    Transaction transaction = Transaction(
+      transactionType: 'Income',
+      itemCategoryType: 'Salary',
+      itemName: 'June Salary',
+      amount: '2000',
+      date: '2024-06-10',
+    );
+    await LocalStorageManager.saveTransaction(transaction);
+    Transaction transaction1 = Transaction(
+      transactionType: 'Income',
+      itemCategoryType: 'Salary',
+      itemName: 'June Salary',
+      amount: '5000',
+      date: '2024-08-10',
+    );
+    await LocalStorageManager.saveTransaction(transaction1);
+    Transaction transaction2 = Transaction(
+      transactionType: 'Income',
+      itemCategoryType: 'Salary',
+      itemName: 'June Salary',
+      amount: '3000',
+      date: '2024-08-10',
+    );
+    await LocalStorageManager.saveTransaction(transaction2);
+    Transaction? loadedTransactionBefore =
+        await LocalStorageManager.loadTransaction(index: 1);
+    expect(loadedTransactionBefore, equals(transaction1));
+
+    await LocalStorageManager.deleteTransaction(1);
+
+    Transaction? loadedTransaction =
+        await LocalStorageManager.loadTransaction(index: 1);
+    expect(loadedTransaction, equals(transaction2));
+
+    Transaction? loadedTransaction2 =
+        await LocalStorageManager.loadTransaction(index: 0);
+    expect(loadedTransaction2, equals(transaction));
+  });
 }
