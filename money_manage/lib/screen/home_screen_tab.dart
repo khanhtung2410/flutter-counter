@@ -48,6 +48,16 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
     _loadUserInfo();
   }
 
+  //xóa được giao dịch đã hiện nhưng chưa xóa được trong local store vì chưa thêm vào local
+  void _handleNewTransactionDeletion(
+      Transaction transaction, int index, UserInfo user) {
+    UserInfo userInfo = Provider.of<UserInfo>(context, listen: false);
+    userInfo.deleteTransaction(transaction);
+    _handleDeleteTransaction(index, user);
+    Provider.of<UserInfo>(context, listen: false).notifyListeners();
+    //thử ùng _handleDeleteTransaction với index = index mới thêm + index trong local
+  }
+
   String calculateTotalBalance(UserInfo userInfo, UserInfo value) {
     int userInfoTotalBalance = int.tryParse(userInfo.totalBalance ?? "0") ?? 0;
     int valueInflow = int.tryParse(value.inflow ?? "0") ?? 0;
@@ -94,7 +104,9 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
                 ListTile(
                   //Lấy tên người dùng từ dữ liêu được lưu
                   title: Text('Xin chào! ${userInfo.name ?? ""}'),
-                  leading: Image.asset("assest/picture/like.png"),
+                  leading: Image.asset(
+                    "assest/picture/like.png",
+                  ),
                   trailing: Image.asset('assest/icon/bell-icon.png'),
                 ),
                 const SizedBox(height: defaultSpacing * 1.5),
@@ -157,7 +169,7 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
                       style: Theme.of(context)
                           .textTheme
                           .bodyMedium
-                          ?.copyWith(fontWeight: FontWeight.w500),
+                          ?.copyWith(fontWeight: FontWeight.w700),
                     ),
                     //Tạo view một danh sách những giao dịch
                     ListView.builder(
@@ -184,7 +196,10 @@ class _HomeScreenTabState extends State<HomeScreenTab> {
                                 transaction: transaction,
                                 userInfo: value,
                                 onDelete: (index) =>
-                                    _handleDeleteTransaction(index, value),
+                                    _handleNewTransactionDeletion(
+                                        transaction!,
+                                        (index + userInfo.transactions!.length),
+                                        userInfo),
                               ),
                             ],
                           );

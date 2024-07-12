@@ -255,8 +255,6 @@ class _MainScreenHostState extends State<MainScreenHost> {
     );
   }
 
- 
-
   //Function hiện chọn ngày và giờ
   Future<void> _showDateTimePicker(BuildContext context) async {
     //Hiện bộ chọn ngày với biến selectedDateTime
@@ -306,7 +304,6 @@ class _MainScreenHostState extends State<MainScreenHost> {
         //Lấy dữ liệu từ Provider cao hơn
         UserInfo userInfo = Provider.of<UserInfo>(context, listen: false);
         //Kiểm tra loại giao dịch và cập nhật dòng tiền
-    
 
         //Lưu giao dịch vào class userInfo
         userInfo.addTransaction(transaction);
@@ -360,38 +357,12 @@ class _MainScreenHostState extends State<MainScreenHost> {
     return Scaffold(
       //Tạo các màn hình khác nhau
       body: buildTabContent(currentIndex),
-      //Nút bấm ở góc phải bên dưới màn hình để đến hai function thêm và xóa giao dịch
-      floatingActionButton: SpeedDial(
-        //Tạo kiểu
-        animatedIcon: AnimatedIcons.menu_close,
-        animatedIconTheme: IconThemeData(size: 22.0),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        elevation: 8.0,
-        shape: CircleBorder(),
-        children: [
-          //Nút đến funtion thêm giao dịch
-          SpeedDialChild(
-            child: Icon(Icons.add),
-            backgroundColor: Colors.green,
-            label: 'Thêm giao dịch',
-            onTap: addTransaction,
-          ),
-          //Nút đến funtion xóa giao dịch
-          SpeedDialChild(
-            child: Icon(Icons.delete),
-            backgroundColor: Colors.orange,
-            label: 'Xóa giao dịch',
-            onTap: (){},
-          ),
-          SpeedDialChild(
-            child: Icon(Icons.change_circle),
-            backgroundColor: Color.fromARGB(255, 255, 133, 20),
-            labelBackgroundColor: Colors.white,
-            label: 'Sửa giao dịch',
-            onTap: () {},
-          ),
-        ],
+      //Nút bấm ở góc phải bên dưới màn hình để thêm giao dịch
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.green,
+        tooltip: 'Thêm giao dịch',
+        onPressed: addTransaction,
+        child: const Icon(Icons.add),
       ),
       //Thanh để đến các màn hình khác nhau
       bottomNavigationBar: BottomNavigationBar(
