@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:money_manage/data/userInfo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -53,17 +52,39 @@ class LocalStorageManager {
     final prefs = await SharedPreferences.getInstance();
     final int transactionCount = prefs.getInt('transactionCount') ?? 0;
 
-    // Remove all entries related to the transaction at the given index
+    if (index >= transactionCount || index < 0) {
+      throw ArgumentError('Index out of range');
+    }
     await prefs.remove('transactionType$index');
     await prefs.remove('itemCategoryType$index');
     await prefs.remove('itemName$index');
     await prefs.remove('amount$index');
     await prefs.remove('date$index');
+    // Adjust indices of subsequent transactions
+    for (int i = index + 1; i < transactionCount; i++) {
+      // Move each transaction data to the previous index
+      await prefs.setString('transactionType${i - 1}',
+          prefs.getString('transactionType$i') ?? '');
+      await prefs.setString('itemCategoryType${i - 1}',
+          prefs.getString('itemCategoryType$i') ?? '');
+      await prefs.setString(
+          'itemName${i - 1}', prefs.getString('itemName$i') ?? '');
+      await prefs.setString(
+          'amount${i - 1}', prefs.getString('amount$i') ?? '');
+      await prefs.setString('date${i - 1}', prefs.getString('date$i') ?? '');
 
+      // Remove the moved data from the current index
+      await prefs.remove('transactionType$i');
+      await prefs.remove('itemCategoryType$i');
+      await prefs.remove('itemName$i');
+      await prefs.remove('amount$i');
+      await prefs.remove('date$i');
+    }
     // Update the transaction count after deletion
     await prefs.setInt('transactionCount', transactionCount - 1);
   }
 
+  //neu xoa o giua thi mat nhung thong tin dang sau
   //Funtion load thông tin
   static Future<UserInfo?> loadUserInfo() async {
     final prefs = await SharedPreferences.getInstance();
@@ -145,4 +166,5 @@ class LocalStorageManager {
     }
     return null;
   }
+  
 }
