@@ -58,7 +58,7 @@ void main() {
     // kiểm tra giao dịch
     expect(loadedTransaction, equals(transaction));
   });
-  test('delete Transaction', () async {
+  test('Delete Transaction', () async {
     SharedPreferences.setMockInitialValues({});
 
     Transaction transaction = Transaction(
@@ -98,5 +98,54 @@ void main() {
     Transaction? loadedTransaction2 =
         await LocalStorageManager.loadTransaction(index: 0);
     expect(loadedTransaction2, equals(transaction));
+  });
+  test('Change transaction', () async {
+    SharedPreferences.setMockInitialValues({});
+    Transaction transaction = Transaction(
+      transactionType: 'Income',
+      itemCategoryType: 'Salary',
+      itemName: 'June Salary',
+      amount: '2000',
+      date: '2024-06-10',
+    );
+    await LocalStorageManager.saveTransaction(transaction);
+    Transaction transaction1 = Transaction(
+      transactionType: 'Income',
+      itemCategoryType: 'Salary',
+      itemName: 'June Salary',
+      amount: '5000',
+      date: '2024-08-10',
+    );
+    await LocalStorageManager.saveTransaction(transaction1);
+    Transaction transaction2 = Transaction(
+      transactionType: 'Income',
+      itemCategoryType: 'Salary',
+      itemName: 'June Salary',
+      amount: '3000',
+      date: '2024-08-10',
+    );
+    await LocalStorageManager.saveTransaction(transaction2);
+
+    Transaction transactionChangeData = Transaction(
+      transactionType: 'Income',
+      itemCategoryType: 'Salary',
+      itemName: 'June Salary',
+      amount: '4000',
+      date: '2024-08-10',
+    );
+    await LocalStorageManager.changeTransaction(transactionChangeData, 0);
+
+    // Kiểm tra giao dịch được đổi có đồng nhất không
+    Transaction? transactionChanged =
+        await LocalStorageManager.loadTransaction(index: 0);
+    expect(transactionChanged, transactionChangeData);
+
+    // Kiểm tra các giao dịch phía sau có giữ nguyên không
+    Transaction? transactionKeep =
+        await LocalStorageManager.loadTransaction(index: 1);
+    expect(transactionKeep, transaction1);
+    Transaction? transactionKeep2 =
+        await LocalStorageManager.loadTransaction(index: 2);
+    expect(transactionKeep2, transaction2);
   });
 }
