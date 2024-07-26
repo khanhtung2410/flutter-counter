@@ -16,9 +16,9 @@ class UserInfo extends ChangeNotifier {
     this.name,
     this.gender,
     this.birthday,
-    this.totalBalance,
-    this.inflow,
-    this.outflow,
+    this.totalBalance = '0',
+    this.inflow = '0',
+    this.outflow = '0',
     //Lấy biến lưu trữ
     List<Transaction>? transactions,
   }) {
@@ -108,7 +108,7 @@ List<String> transactionTypes = <String>['Thu', 'Chi'];
 //Danh sách mục giao dịch
 List<String> itemCategoryTypes = <String>[
   'Cá nhân',
-  'Già đình',
+  'Gia đình',
   'Quà',
   'Đồ ăn'
 ];
@@ -165,6 +165,37 @@ class Transaction {
       itemName.hashCode ^
       amount.hashCode ^
       date.hashCode;
+}
+
+class SpendingCalculator {
+  final List<Transaction> transactions;
+
+  SpendingCalculator(this.transactions);
+
+  // Calculate total spending for each category
+  Map<String, double> calculateSpendingByCategory() {
+    final spendingByCategory = <String, double>{};
+
+    for (var transaction in transactions) {
+      // Only process 'Chi' (outflow) transactions
+      if (transaction.transactionType == 'Chi') {
+        final category = transaction.itemCategoryType ?? 'Unknown';
+        final amount = double.tryParse(transaction.amount ?? '0') ?? 0;
+
+        if (spendingByCategory.containsKey(category)) {
+          spendingByCategory[category] = spendingByCategory[category]! + amount;
+        } else {
+          spendingByCategory[category] = amount;
+        }
+      }
+    }
+    return spendingByCategory;
+  }
+
+  // Get total spending for a specific category
+  num getSpendingForCategory(String category) {
+    return calculateSpendingByCategory()[category] ?? 0;
+  }
 }
 
 //Lớp dữ liệu tạo
