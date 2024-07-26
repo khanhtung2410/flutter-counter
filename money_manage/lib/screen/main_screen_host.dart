@@ -1,7 +1,9 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:intl/intl.dart';
+import 'package:money_manage/screen/stat.dart';
 import 'package:provider/provider.dart';
 
 import 'package:money_manage/data/localstore.dart';
@@ -36,7 +38,7 @@ class _MainScreenHostState extends State<MainScreenHost> {
       case 0:
         return HomeScreenTab();
       case 1:
-        return HomeScreenTab();
+        return const Statistics();
       case 2:
         return Container();
       case 3:
